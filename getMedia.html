@@ -1,0 +1,240 @@
+<!DOCTYPE HTML>
+<html lang="pt" ng-app="espimApp"  ng-controller="mainController">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>ESPIM - Mídia</title>
+     <!-- Paper bootstrap -->
+   <link rel="stylesheet" href="css/papel-bootstrap.css">
+   <link rel="stylesheet" href="css/style.css">
+    <!-- <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css"> -->
+    <!-- <link rel="stylesheet" href="bower_components/bootstrap/dist/css//bootstrap-theme.min.css"> -->
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="bower_components/angular-loading-bar/build/loading-bar.min.css">
+
+        <!-- SweetAlert -->
+    <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css">
+
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- SweetAlert -->
+    <script type="text/javascript" src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
+    <!-- Angular -->
+    <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="bower_components/angular-loading-bar/build/loading-bar.min.js"></script>
+    <script type="text/javascript" src="bower_components/uuid-js/lib/uuid.js"></script>
+    <!-- liss -->
+    <script type='text/javascript' src='libs/webtoolkit.base64.js'></script>
+    <script type='text/javascript' src='libs/sha1.js'></script>
+    <script type='text/javascript' src='libs/jquery.form.js'></script>
+    <script type='text/javascript' src='libs/base64-binary.js'></script>
+    <script src="js/RecordRTC.min.js"></script>
+    <script src="js/getMediaElement.js"></script>
+    <script src="js/espim/util.js"></script>
+    <style>
+
+    .videoBlocks {
+      position: relative;
+      display:inline-block;
+    }
+
+
+    .videoPlaceHolder {
+      float: left;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      width:480px;
+      height:360px;
+      font-size:20em;
+      background: #e6f2ff;
+    }
+
+
+    .videoPlayer {
+      float: left;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      width:480px;
+      height:360px;
+      z-index: 1;
+    }
+
+
+    .audioPlaceHolder {
+      float: left;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      width:480px;
+      height:360px;
+      font-size:20em;
+      background: #e6f2ff;
+    }
+
+
+    .audioPlayer {
+      float: left;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      width:480px;
+      height:360px;
+      z-index: 1;
+    }
+
+
+    .reddot {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      max-width: 50px;
+      max-height: :50px;
+      object-fit: cover;
+      z-index: 2;
+      visibility: hidden;
+    }
+
+    </style>
+
+  </head>
+  <body>
+    <div class="container-background paper-shadow-z1" style="margin-top: 10px!important">
+      <div class="row">
+          <div class="col-md-12">
+            <h4>Selecione a fonte da Mídia</h4>
+          </div>
+        </div>
+
+      <ul class="nav nav-tabs">
+        <li class="active">
+          <a data-toggle="tab" href="#upload">
+            Enviar um arquivo
+            <span class="glyphicon glyphicon-upload"></span>
+          </a>
+        </li>
+        <li id="liRecordVideo">
+          <a data-toggle="tab" id="videoTab" href="#recordVideo">
+            Gravar vídeo
+            <span class="glyphicon glyphicon-facetime-video"></span>
+          </a>
+        </li>
+        <li>
+          <a data-toggle="tab" id="audioTab" href="#recordAudio">
+            Gravar áudio
+            <span class="glyphicon glyphicon-music"></span>
+          </a>
+        </li>
+        <!--li>
+          <a data-toggle="tab" href="#takePicture">
+            Tirar foto
+            <span class="glyphicon glyphicon-camera"></span>
+          </a>
+        </li-->
+      </ul>
+
+
+      <div class="tab-content">
+        <div id="upload" class="tab-pane fade in active">
+          <h3>Enviar um arquivo</h3>
+          <p>Escolha um arquivo de vídeo, áudio ou imagem compátivel para enviar.</p>
+
+        <video id="uploadVideo" width="480" height="360" controls ></video>
+      <audio id="uploadAudio" width="480" controls ></audio>
+      <img id="uploadImage" width="480" height="360" class="img-responsive center-block" style="max-width: 480px; max-height: 360px; object-fit: contain"></img>
+      <p><label class="btn btn-default btn-file" style="display: inline-block;">
+        Selecione <input type="file" accept="video/mp4,audio/mp3,audio/wav,audio/ogg,image/png,image/gif,image/jpg,image/jpeg" capture="camera" id="fileSelector" style="display: none;">
+      </label>
+      <p class="help-block">São suportadas imagens nos formatos gif, jpg e png; vídeos no formato mp4 e áudios no formato mp3 e ogg.</p>
+      <button id="btnSendMedia" ng-click="sendMedia()" class="btn btn-primary disabled" disabled="">Enviar mídia</button>
+    </div>
+
+
+    <div id="recordVideo" class="tab-pane fade">
+      <h3>Gravar vídeo</h3>
+      <p>Grave um vídeo utilizando sua Webcam.</p>
+      <div id="videosContainer" class="videoBlocks">
+        <div id="webcamPlaceholderVideo" class="videoPlaceHolder">
+          <span class="fa fa-video-camera" ></span>
+        </div>
+        <div id="webcamPlaceholderVideo2" class="videoPlaceHolder" style="display: none;">
+                    <img id="reddotVideo" class="reddot" src="img/red_dot.png" />
+          <video id="webcamVideo" class="videoPlayer" muted  >
+
+          </video>
+        </div>
+
+      </div>
+      <div id="divRecorded" class="videoBlocks">
+        <div id="recordedPlaceholderVideo" class="videoPlaceHolder">
+          <span class="fa fa-youtube-play" ></span>
+        </div>
+        <div id="recordedPlaceholderVideo2" class="videoPlaceHolder" controls style="display: none">
+
+          <video id="recordedVideo" class="videoPlayer" controls >
+          </video>
+        </div>
+      </div>
+      <p></p>
+      <div>
+        <!--button id="open" class="btn btn-primary active">Abrir Webcam</button-->
+        <button id="startRecordingVideo" class="btn disabled" disabled>Iniciar gravação</button>
+        <button id="stopRecordingVideo" class="btn disabled" disabled>Encerrar gravação</button>
+        <button id="saveLocalVideo" class="btn disabled" disabled>Salvar localmente</button>
+        <button id="btnSendVideo" ng-click="sendVideo()" class="btn btn-primary disabled" disabled="">Enviar vídeo</button>
+      </div>
+    </div>
+
+    <div id="recordAudio" class="tab-pane fade">
+      <h3>Gravar áudio</h3>
+      <p>Grave um trecho de áudio utilizando seu microfone.</p>
+
+      <div class="videoBlocks">
+        <div id="placeholderAudio" class="audioPlaceHolder">
+          <span class="fa fa-microphone" ></span>
+        </div>
+
+        <div id="placeholderAudio2" class="audioPlaceHolder" style="display: none";>
+            <img id="reddotAudio" class="reddot" src="img/red_dot.png" />
+          <span class="fa fa-microphone-slash" ></span>
+        </div>
+
+        <div class="audioPlaceHolder" style="display: none;">
+
+          <audio id="micAudio" class="audioPlayer" muted  >
+
+          </audio>
+        </div>
+
+      </div>
+      <div class="videoBlocks">
+        <div id="recordedPlaceholderAudio" class="audioPlaceHolder">
+          <span class="fa fa-music" ></span>
+        </div>
+        <div id="recordedPlaceholderAudio2" class="audioPlaceHolder" controls style="display: none">
+
+          <audio id="recordedAudio" class="audioPlayer" controls>
+          </audio>
+        </div>
+      </div>
+      <p></p>
+      <div>
+        <!--button id="open" class="btn btn-primary active">Abrir Webcam</button-->
+        <button id="testMic" class="btn">Ouvir/Silenciar Microfone</button>
+        <button id="startRecordingAudio" class="btn">Iniciar gravação</button>
+        <button id="stopRecordingAudio" class="btn disabled" disabled>Encerrar gravação</button>
+        <button id="saveLocalAudio" class="btn disabled" disabled>Salvar localmente</button>
+        <button id="btnSendAudio" ng-click="sendAudio()" class="btn btn-primary disabled" disabled="">Enviar audio</button>
+      </div>
+    </div>
+
+
+
+  </div>
+</div>
+<script src="js/espim/access_control.js"></script>
+<script src="js/espim/media_capturer.js"></script>
+
+</body>
+</html>

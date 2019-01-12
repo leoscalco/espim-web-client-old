@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR" ng-app="espimApp"  ng-controller="mainController">
+ <head>
+    <meta charset='utf-8' />
+    <title>ESPIM - {{pageTitle}}</title>
+    
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+    <script src="js/espimModel_2.js"></script>
+    <script src="js/restFacade_2.js"></script>
+</head>
+
+<body>
+
+<script>
+  var app = angular.module("espimApp", []);
+
+  app.controller("mainController", function($scope, $http, $q) {
+    $scope.pageTitle = $scope.headerTitle = "Página Inicial";
+
+    $scope.facade = new ObserverRestFacade($http, $q);
+
+    $scope.facade.listAll().then(function(obs) {
+      console.log(obs);
+    });
+
+  });
+  </script>
+    
+</body>
+  
+</html>

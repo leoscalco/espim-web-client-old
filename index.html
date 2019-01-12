@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR" ng-app="espimApp"  ng-controller="mainController">
+  <head>
+    <title>ESPIM - Página Inicial</title>
+    <meta charset='utf-8' />
+
+    <!-- Latest compiled and minified CSS -->
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+   <!-- Optional theme -->
+   <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"> -->
+
+  <!-- Paper bootstrap -->
+  <link rel="stylesheet" href="css/papel-bootstrap.css">
+
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" integrity="sha256-iXUYfkbVl5itd4bAkFH5mjMEN5ld9t3OHvXX3IU8UxU=" crossorigin="anonymous" />
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert-dev.js" integrity="sha256-Y6AEuvugryve80FgzPE3e2EONgfiYPcaSaqF+vIFGIA=" crossorigin="anonymous"></script>
+
+
+   <link rel="stylesheet" href="css/style.css">
+
+
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+
+    <!-- Latest compiled and minified JavaScript -->
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+
+      <!-- Angular -->
+      <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+
+
+
+
+      <!-- Google API -->
+      <meta name="google-signin-client_id" content="288369558415-uogknhr1lk4qvd95l52r90gnsnkdgr0h.apps.googleusercontent.com">
+      <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
+      <script src="https://apis.google.com/js/client:platform.js" ></script>
+      <script src="https://apis.google.com/js/api.js" ></script>
+
+
+
+      <!-- Espim -->
+      <script src="js/espim/access_control.js"></script>
+      <script src="js/espim/model.js"></script>
+      <script src="js/espim/rest_facade.js"></script>
+
+
+
+
+  </head>
+  <body>
+
+   <div class="container">
+   <div class = "page-header">
+   <div class="row">
+            <div class="col-md-8">
+               <h1>
+                  <img style="height: 100px; width: auto" src="img/logo-dark-1/logo-dark-1@3x.png"
+             class="logo_espim_web">
+
+                  <small>Página Inicial</small>
+               </h1>
+            </div>
+            <div class="col-md-4">
+               <div id="my-signin2" style="float: right; padding-top: 4em;" ></div>
+            </div>
+   </div>
+   </div>
+
+   <div class="row">
+         <div class="col-12">
+            <h4 class="text-justify">O Método de Amostragem de Experiências e Intervenção Programada <strong>(ESPIM)</strong> combina procedimentos selecionados do campo da Psicologia, como Programação de Ensino Individualizada e Método de Amostragem de Experiências (ESM), e as vantagens proporcionadas pela Computação Ubíqua com o objetivo de ampliar o alcance da coleta de dados e intervenções a distância em ambientes naturais. O método é suportado por um sistema computacional desenvolvidos para as plataformas Web e mobile. Ele permite que se programem intervenções baseadas em dados coletados de maneira explícita ou pervasiva. O sistema suporta a troca de dados entre as diferentes partes interessadas envolvidas no planejamento da coleta de dados e/ou intervenção. Espera-se que o ESPIM permita a pesquisadores e profissionais de diversas áreas de conhecimento, como educação e saúde, criar e executar experimentos ou intervenções conduzidos a distância. </h4>
+         </div>
+   </div>
+
+
+   <div class="row text-center" >
+         <div class="col-md-4">
+            <a href='https://play.google.com/store/apps/details?id=br.usp.icmc.intermidia.sensem&hl=en'><img alt='Google Play Store' class="center-block img-responsive" src='https://play.google.com/intl/en_us/badges/images/generic/pt_badge_web_generic.png' id="google-store-img"/></a>
+         </div>
+
+         <div class="col-md-4">
+            <a href="http://intermidia.icmc.usp.br/"><img alt='Intermidia Lab' class="center-block img-responsive" src="img/intermidia_logo.png" id="intermidia-img"></a>
+         </div>
+         </div>
+   </div>
+
+   </div>
+
+   <!--button onclick="deletUser()">Deletar Usuário</button-->
+
+   <script type="text/javascript">
+
+      function loginCallback(user, observer) {
+        console.log(user, observer);
+        if (observer == null) {
+          window.location.replace("login.html");
+        } else {
+          window.location.replace("home.html");
+      }
+    }
+
+
+
+      var caManager;
+      var app = angular.module("espimApp", []);
+      app.controller("mainController", function($scope, $http, $q) {
+         caManager = new ControlAccessManager($http, $q);
+         caManager.setLoginCallBack(loginCallback);
+
+      });
+
+
+
+
+      function onLoad() {
+        if (!caManager.isUserLogged()) {
+          console.log('not logged')
+          caManager.initAuth();
+
+
+          caManager.renderButton();
+
+       } else {
+          window.location.replace("home.html");
+       }
+
+
+      }
+
+
+
+      /*function deletUser() {
+          var id = prompt("Qualo Id do usuário a ser deletado?", "");
+          if (id != null) {
+               $.ajax({
+                     url: 'http://blacklabel.intermidia.icmc.usp.br:8080/esm-rest-service/observers/'+ id,
+                     type: 'DELETE',
+                     contentType : 'application/json',
+                     crossDomain : true,
+                     success: function(data) {
+                        console.log(data);
+                        alert('Deletado com sucesso');
+                     },
+                     error: function(h, s, e) {
+                        console.log(h, s, e);
+                        alert('Erro com sucesso');
+                     },
+                  });
+         }
+
+      }*/
+
+   </script>
+
+
+</body>
+
+</html>

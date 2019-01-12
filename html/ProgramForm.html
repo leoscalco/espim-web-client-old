@@ -1,0 +1,76 @@
+<div class="col-md-8">
+  <ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#info">Informações</a></li>
+    <li><a data-toggle="tab" href="#observers">Observadores</a></li>
+    <li><a data-toggle="tab" href="#participants">Participantes</a></li>
+    <li><a data-toggle="tab" href="#events">Eventos</a></li>
+  </ul>
+  <div class="tab-content">
+    <div id="info" class="tab-pane fade in active">
+      <h3>Informações Básicas</h3>
+      <div class="form-group">
+        <label for="title">Título*:</label>
+        <input id="txtTitle" ng-model="program.title" type="text" class="form-control" required autofocus>
+      </div>
+      <div class="form-group" >
+        <label for="description">Descrição:</label>
+        <textarea id="txtDescription" ng-model="program.description" type="text" class="form-control"></textarea>
+      </div>
+      <div class="form-group">
+        <div class='input-group date' id='datetimepicker1'>
+          <input type='text' class="form-control" />
+          <span class="input-group-addon">
+            <span class="glyphicon glyphicon-calendar"></span>
+          </span>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class='input-group date' id='datetimepicker1'>
+          <input type='text' class="form-control" />
+          <span class="input-group-addon">
+            <span class="glyphicon glyphicon-calendar"></span>
+          </span>
+        </div>
+      </div>
+
+    </div>
+    <div id="observers" class="tab-pane fade">
+      <h3>Observadores</h3>
+      <div class="form-group">
+        <!--label for="title" class="text-centered">Observadores*:</label-->
+        <button type="button" ng-click="addObserver()"class="btn btn-info">Adicionar um novo observador <span class="glyphicon glyphicon-plus"/></button>
+          <dualmultiselect options="observersSelectionOptions"> </dualmultiselect>
+        </div>
+      </div>
+
+      <div id="participants" class="tab-pane fade">
+        <h3>Participantes</h3>
+        <div class="form-group">
+          <!--label for="title" class="text-centered">Participantes*:</label-->
+          <button type="button" ng-click="addParticipant()" class="btn btn-info">Adicionar um novo participante <span class="glyphicon glyphicon-plus"/></button>
+            <dualmultiselect options="participantsSelectionOptions"> </dualmultiselect>
+          </div>
+        </div>
+        <div id="events" class="tab-pane fade">
+          <h3>Eventos</h3>
+          <div class="form-group">
+            <div class="panel panel-primary">
+              <div class="panel-heading">
+                <span class="glyphicon glyphicon-list"></span>Lista de Eventos
+              </div>
+              <div class="panel-body">
+                <div class="list-group">
+                  <div class="list-group-item" ng-repeat="event in events">
+                    {{event.title}}
+                    <div class="pull-right action-buttons">
+                      <a href="" ng-click="editEvent(event)"  ><span class="glyphicon glyphicon-pencil"></span></a>
+                      <a  href="" ng-click="deleteEvent(event)" class="trash"><span class="glyphicon glyphicon-trash"></span></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p><button type="button" ng-click="addEvent()" class="btn btn-info">Adicionar um novo evento <span class="glyphicon glyphicon-plus"/></button>
+            </div>
+          </div>
+        </div>

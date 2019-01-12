@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR" ng-app="espimApp"  ng-controller="mainController">
+  <head>
+    <meta charset='utf-8' />
+    <title>ESPIM - {{pageTitle}}</title>
+
+    <!-- CSS Files -->
+
+    <!-- Bootstrap -->
+ <!--    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css//bootstrap-theme.min.css">
+   -->
+    <!-- Paper bootstrap -->
+   <link rel="stylesheet" href="css/papel-bootstrap.css">
+   <link rel="stylesheet" href="bower_components/angular-loading-bar/build/loading-bar.min.css">
+    <!-- SweetAlert -->
+    <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css">
+    <!-- Espim -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- JavaScript Files -->
+    <!-- Jquery -->
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- SweetAlert -->
+    <script type="text/javascript" src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
+    <!-- Angular -->
+    <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="bower_components/angular-loading-bar/build/loading-bar.min.js"></script>
+    <!-- Google API -->
+    <meta name="google-signin-client_id" content="288369558415-uogknhr1lk4qvd95l52r90gnsnkdgr0h.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" ></script>
+    <script src="https://apis.google.com/js/client:platform.js" ></script>
+    <script src="https://apis.google.com/js/api.js" ></script>
+
+    <!-- Espim -->
+    <script src="js/espim/access_control.js"></script>
+    <script src="js/espim/model.js"></script>
+    <script src="js/espim/rest_facade.js"></script>
+  </head>
+  <body>
+    <div ng-include src="'html/menu.html'"></div>
+    <div class="" >
+      <!-- <div ng-include src="'html/header.html'"></div> -->
+      <div class="container-background paper-shadow-z1">
+        <div class="row">
+          <div class="col-md-12">
+            <h4>Informações do Participante</h4>
+          </div>
+        </div>
+
+        <form id="participantForm" ng-submit="onSubmit()">
+
+          <div ng-include src="'html/ParticipantForm.html'"></div>
+
+          <div class="row">
+            <div class="col-md-12 pull-right">
+              <button type="submit" ng-click="onClick('saveAndNew')" class="btn btn-default
+              ">Salvar e adicionar outro</button>
+              &nbsp;
+              <button type="submit" ng-click="onClick('save')" class="btn btn-primary">Salvar</button>
+            </div>
+          </div>
+        </form>
+
+      </div>
+    </div>
+    <script>
+
+
+    var caManager = new ControlAccessManager();
+    if (!caManager.isUserLogged()) {
+      window.location.replace("index.html");
+    }
+
+
+    var app = angular.module("espimApp", []);
+
+    app.controller("mainController", function($scope, $http, $q) {
+
+      $scope.pageTitle = $scope.headerTitle = "Adicionar Participante";
+      $scope.profileImage = caManager.user.icon;
+      $scope.username = caManager.user.name;
+      $scope.email = caManager.user.email;
+
+      $scope.participantREST = new ParticipantRestFacade($http, $q);
+      $scope.observersREST = new ObserverRestFacade($http, $q);
+
+
+      $scope.buttonClicked = null;
+      $scope.participant = new Participant();
+
+
+      $scope.onClick = function(buttonName) {
+        $scope.buttonClicked = buttonName;
+      };
+
+
+      $scope.getMenuClass = function(name) {
+        return name == 'participant' ? 'dropdown active' : 'dropdown';
+      }
+
+      $scope.onSubmit = function() {
+        var promises = [];
+
+        promises.push($scope.participantREST.add($scope.participant));
+        promises.push($scope.observersREST.getById(caManager.user.id));
+
+        $q.all(promises).then(
+          function(responses) {
+
+            var thisParticipant = responses[0];
+            var thisObserver = responses[1];
+
+            thisObserver.addContact(thisParticipant);
+
+            $scope.observersREST.save(thisObserver).then(
+              function(responses) {
+                 swal({
+                  title: "Participante Adicionado",
+                  text: "O participante foi adicionado com sucesso",
+                  type: "success"
+                },
+                function() {
+                  if ($scope.buttonClicked == 'save') {
+                    // caManager.message = "Participante adicionado com sucesso.";
+                    window.location.replace("listParticipants.html");
+
+                  } else if ($scope.buttonClicked == 'saveAndNew') {
+                    console.log('saveAndNew');
+                    $scope.participant = new Participant();
+                    $scope.$apply();
+                  }
+                });
+              },
+              errorAdding)
+          },errorAdding);
+
+      };
+
+      function errorAdding(response) {
+              console.log('Error:', response);
+          /*swal({
+            title: "Erro ao Salvar",
+            text: "Ocorreu o seguinte erro ao salvar o participante: " + response.status + ' ' + response.data.message,
+            type: "error",
+            confirmButtonText: "Ok"
+          });*/
+
+
+          swal({
+            title: "Erro ao Salvar",
+            text: "Já existe um participante cadastrado com esse e-mail",
+            type: "error",
+            confirmButtonText: "Ok"
+          });
+
+        return $q.reject(response);
+      }
+    });
+
+    function logout() {
+      caManager.logout();
+    }
+    </script>
+
+  </body>
+
+</html>

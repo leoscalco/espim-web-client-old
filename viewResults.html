@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR" ng-app="espimApp"  ng-controller="mainController">
+  <head>
+    <meta charset='utf-8' />
+
+    <title>ESPIM - {{pageTitle}}</title>
+    
+    <!-- CSS Files -->
+    
+      <!-- Bootstrap -->
+      <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+      <link rel="stylesheet" href="bower_components/bootstrap/dist/css//bootstrap-theme.min.css">
+
+      <!-- SweetAlert -->
+      <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css">
+
+      <!-- Espim -->
+      <link rel="stylesheet" href="css/style.css">
+
+    <!-- JavaScript Files -->
+
+      <!-- Jquery -->
+      <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+
+      <!-- Bootstrap -->
+      <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+      <!-- SweetAlert -->
+      <script type="text/javascript" src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
+
+      <!-- Angular -->
+      <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+
+      <!-- File Saver -->
+      <script type="text/javascript" src="bower_components/file-saver/FileSaver.min.js"></script>
+
+
+      <!-- Google API -->
+      <meta name="google-signin-client_id" content="288369558415-uogknhr1lk4qvd95l52r90gnsnkdgr0h.apps.googleusercontent.com">
+      <script src="https://apis.google.com/js/platform.js" ></script>
+      <script src="https://apis.google.com/js/client:platform.js" ></script>
+      <script src="https://apis.google.com/js/api.js" ></script>
+
+      <!-- Moment.JS -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.2/moment.min.js"></script>
+
+      <!-- Espim -->
+      <script src="js/accessControl.js"></script>
+      <script src="js/espimModel.js"></script>
+      <script src="js/restFacade.js"></script>
+      <script src="js/util.js"></script>
+      <script src="js/results.js"></script>
+
+  </head>
+  <body>
+
+    <div class="container" >
+      <div ng-include src="'html/header.html'"></div>
+      <div ng-include src="'html/menu.html'"></div>
+      <div ng-include src="'html/ResultsView.html'"></div-->
+    </div>
+
+    <script>
+        var caManager = new ControlAccessManager();
+
+        if (!caManager.isUserLogged()) {
+          window.location.replace("index.html");
+        }
+
+        var app = angular.module("espimApp", []);
+        app.controller("mainController", function($scope, $http, $q) {
+          var programId = getUrlParameter('programId');
+          if (!programId) {
+            programId = 0;
+          }
+
+           $scope.ObserverREST = new ObserverRestFacade($http, $q);
+            $scope.ParticipantREST = new ParticipantRestFacade($http, $q);
+            $scope.EventREST = new EventRestFacade($http, $q);
+            $scope.ProgramREST = new ProgramRestFacade($http, $q);
+            $scope.InterventionREST = new InterventionRestFacade($http, $q);
+            $scope.TriggerREST = new TriggerRestFacade($http, $q);
+
+          $scope.pageTitle = $scope.headerTitle = "Visualiar Resultados: Acompanhamento CAD";
+          $scope.profileImage = caManager.user.icon;
+          $scope.username = caManager.user.name;
+          $scope.observer = new Observer();
+          $scope.observer.email = caManager.user.email;
+          $scope.observer.id = caManager.user.id;
+          $scope.observer.name = caManager.user.name;
+
+          $scope.participantFilter = "";
+
+          $scope.getMenuClass = function(name) {
+            return name == 'program' ? 'dropdown active' : 'dropdown';
+          }
+
+          $scope.getActiveTabClass = function(isFirst) {
+            return isFirst ? "active" : "";
+          }
+
+          $scope.getActiveContentClass = function(isFirst) {
+            return isFirst ? "tab-pane fade in active" : "tab-pane fade";
+          }
+
+          $scope.events = generated_results;
+
+          $scope.exportCSV = function(index) {
+            var event = $scope.events[index];
+
+            //To get only filtred values, ignore now.
+            /*var filter = $('#filter').val();
+
+            var filteredArray = []
+
+            for (var i = 0; i < event.results.length; i++) {
+
+              if (event.results[i].participant.indexOf(filter) >= 0) {
+                filteredArray.push(event.results[i]);
+              }
+            }*/
+
+            filteredArray = event.results;
+
+            var output = "";
+
+            for (var i = 0; i < event.questions.length; i++) {
+              output += event.questions[i];
+
+              if (i != event.questions.length -1) {
+                output += ',';
+              }
+            }
+
+            output +='\n';
+
+            /*for (var i = 0; i < filteredArray.length; i++) {
+              output += filteredArray[i].participant + ','
+              for (var j = 0; j < filteredArray[i].fields.length; j++) {
+                output += filteredArray[i].fields[j]
+
+                if (j != filteredArray[i].fields.length -1) {
+                  output += ',';
+                }
+              }
+
+              if (i != filteredArray.length -1) {
+                output += '\n';
+              }
+            }*/
+
+
+            for (var i = 0; i < filteredArray.length; i++) {
+              output += "\"" + filteredArray[i].intervention + '\",'
+              output += filteredArray[i].started + ','
+              output += filteredArray[i].ended + ','
+              output += filteredArray[i].type + ','
+              output += "\"" + filteredArray[i].anwser + '\"'
+
+
+              if (i != filteredArray.length -1) {
+                output += '\n';
+              }
+            }
+
+            console.log(output);
+
+            var blob = new Blob([output], {type: "text/plain;charset=utf-8"});
+            saveAs(blob, "planilha.cvs");
+          }
+
+
+          $scope.loadProgram = function(programId) {
+
+                $scope.ProgramREST.getById(programId).then(
+                  function(program){
+
+                    $scope.program = program;
+
+                    var promises = [];
+                    //promises.push($scope.ObserverREST.listAll());
+                    //promises.push($scope.ParticipantREST.listAll());
+                    promises.push($scope.ProgramREST.getObservers($scope.program));
+                    promises.push($scope.ProgramREST.getParticipants($scope.program));
+                    promises.push($scope.ProgramREST.getEvents($scope.program));
+
+                    $q.all(promises).then(
+                      function(responses) {
+                        var programObservers = responses[0];
+                        var programParticipants = responses[1];
+                        var programEvents = responses[2];
+
+                        console.log($scope.program, programObservers, programParticipants, programEvents);
+
+                      }, errorAdding);
+                  }, errorAdding);
+              }
+
+
+              function errorAdding(response) {
+       console.log('Error:', response);
+          swal({
+            title: "Erro ao Salvar",
+            text: "Ocorreu o seguinte erro ao salvar o programa: " + response.status + ' ' + response.data.message,
+            type: "error",
+            confirmButtonText: "Ok"
+          });
+
+      return $q.reject(response);
+    }
+
+
+        var programId = getUrlParameter('programId');
+
+      if (programId != null) {
+          $scope.loadProgram(parseInt(programId));
+      }
+
+
+
+        });
+
+        function logout() {
+          caManager.logout();
+          window.location.replace("index.html");
+        }
+
+        function randomDate(start, end, startHour, endHour) {
+          var date = new Date(+start + Math.random() * (end - start));
+          var hour = startHour + Math.random() * (endHour - startHour) | 0;
+          date.setHours(hour);
+          return date;
+        }
+    </script>
+    
+  </body>
+  
+</html>

@@ -1,0 +1,154 @@
+
+<form ng-submit="onSubmitEvent()">
+  <div id="eventsModal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+      <!-- Modal content-->
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <button type="button" class="close" ng-click="cancelEvent()">&times;</button>
+          <h4 class="modal-title">{{eventOperation}}</h4>
+        </div>
+
+        <div class="modal-body">
+          <div class="row">
+
+          <div class="col-md-6">
+          <div class="form-group">
+              <label for="title">Título <span class="text-danger">*</span>:
+              <input ng-model="event.title" size="1000" type="text" placeholder="Título do Evento" class="form-control" required autofocus>
+          </div>
+          <div class="form-group" >
+            <label for="description">Descrição:</label>
+            <textarea id="txtDescription" ng-model="event.description" placeholder="Descrição do Evento" type="text" class="form-control"></textarea>
+          </div>
+
+
+                       <div class="form-group">
+              <div class="panel panel-primary">
+                <div class="panel-heading">
+                  <span class="glyphicon glyphicon-list"></span>Lista de Intervenções <span class="text-danger">*</span>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-group">
+                <li class="list-group-item" ng-if="interventions.length == 0">Não há intervenções planejadas ainda.</li>
+                <li class="list-group-item" ng-repeat="intervention in interventions">{{intervention.friendlyOutput()}}</li>
+              </ul>
+                </div>
+                <div class="panel-footer text-right">
+                  <button type="button" class="btn btn-info" ng-click="createInterventions()" class="btn btn-xs btn-default">{{interventionsButton}} <span class="glyphicon glyphicon-plus"/></button>
+
+                </div>
+              </div>
+
+<!--               <button type="button" ng-click="createInterventions()" id="btnPlanInterventions" class="btn btn-primary btn-block">{{interventionsButton}}</button>
+ -->
+
+            </div>
+            </div>
+            <div class="col-md-6">
+
+
+          <div class="panel panel-default">
+            <div class="panel-heading">Disparo <span class="text-danger">*</span></div>
+
+            <div class="panel-body">
+
+              <div class="form-group" style="padding-left:15px; padding-top: 5px" >
+                <!--label >Disparo*:</label-->
+
+        <div class="radio">
+            <label><input type="radio" ng-model="superType" value="manual"/>Disparo manual (usuário dispara ao clique)</label>
+        </div>
+        <br/>
+        <div class="radio">
+                        <label><input type="radio" ng-model="superType" value="time"/>Disparo programado</label>
+        </div>
+<div class="triggerTimer">
+           <!--      <div class="radio">
+                  <label><input type="radio" ng-model="triggerType" value="daily"/>Diariamente</label>
+                </div> -->
+
+                <div class="form-group" style="padding-top:5px;">
+                  <div class="radio">
+                    <label><input type="radio" ng-model="triggerType" value="weekly"/>Semanalmente</label>
+                    <label class="checkbox-inline disabled"><input ng-model="triggerDays[0]" class="checkbox-trigger" type="checkbox" value="" disabled />Dom</label>
+                    <label class="checkbox-inline disabled"><input ng-model="triggerDays[1]" class="checkbox-trigger" type="checkbox" value="" disabled />Seg</label>
+                    <label class="checkbox-inline disabled"><input  ng-model="triggerDays[2]" class="checkbox-trigger" type="checkbox" value="" disabled />Ter</label>
+                    <label class="checkbox-inline disabled"><input  ng-model="triggerDays[3]" class="checkbox-trigger" type="checkbox" value="" disabled />Qua</label>
+                    <label class="checkbox-inline disabled"><input ng-model="triggerDays[4]" class="checkbox-trigger" type="checkbox" value="" disabled />Qui</label>
+                    <label class="checkbox-inline disabled"><input ng-model="triggerDays[5]" class="checkbox-trigger" type="checkbox" value="" disabled />Sex</label>
+                    <label class="checkbox-inline disabled"><input ng-model="triggerDays[6]" class="checkbox-trigger" type="checkbox" value="" disabled />Sab</label>
+                  </div>
+                </div>
+
+                 <div>
+                    <label>Tipo de Aviso: </label>
+
+                  <div class="radio">
+                    <label><input type="radio" ng-model="triggerPriority" value="NC"/>Notificação curta</label>
+                  </div>
+
+                  <div class="radio">
+                    <label><input type="radio" ng-model="triggerPriority" value="AL"/>Alarme</label>
+                  </div>
+
+                  <div class="radio">
+                    <label><input type="radio" ng-model="triggerPriority" value="NL"/>Notificação longa</label>
+                  </div>
+
+
+                <div class="form-inline">
+                  <label>Horário:</label>
+                  <input ng-model="triggerTime" class="form-control" id="triggerTimePicker">
+                </div>
+         <div class="form-inline">
+
+                  <label>TimeOut:</label>
+                  <input ng-model="timeOut" class="form-control"">
+                </div>
+             </div>
+</div>
+              </div>
+            </div>
+            <div class="panel-footer text-right">
+              <button type="button" class="btn btn-info" ng-click="addTrigger()" id="saveTrigger">Adicionar Disparo <span class="glyphicon glyphicon-plus"/></button>
+            </div>
+
+            </div>
+                  <div class="panel panel-primary">
+
+                    <div class="panel-heading">
+                      <span class="glyphicon glyphicon-list"></span>Lista de Disparos
+                    </div>
+
+                    <div class="panel-body">
+                      <ul class="list-group">
+                        <li class="list-group-item" ng-if="triggers.length == 0">Não há disparos adiconados ainda.</li>
+                        <li class="list-group-item" ng-repeat="trigger in triggers">
+                          {{ trigger.toReadableString() }}
+                          <div class="pull-right action-buttons">
+                            <a href="" ng-click="deleteTrigger($index)" class="trash"><span class="glyphicon glyphicon-trash"></span></a>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+
+            <span class="text-danger">* Campos marcados com <strong>*</strong> são obrigatórios.</span>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" ng-click="cancelEvent()" class="btn btn-default">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</form>
+</div>

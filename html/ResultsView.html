@@ -1,0 +1,54 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>{{pageTitle}}</h2>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+  <h3>Eventos</h3>
+  <ul class="nav nav-tabs">
+    <li ng-repeat="event in events" ng-class="getActiveTabClass($first)">
+      <a data-toggle="tab" ng-href="{{'#div' + $index}}">{{event.title}}</a>
+    </li>
+  </ul>
+
+  <p>
+
+  <!-- div class="form-group" >
+      <label for="email">Filtrar por participante:</label>
+      <input id="filter" type="input" ng-model="participantFilter" class="form-control">
+  </div-->
+
+
+   <div class="tab-content">
+      <div id="{{'div' + $index}}" ng-repeat="event in events" ng-class="getActiveContentClass($first)" >
+      <table class="table table-striped">
+          <thead>
+            <tr>
+              <th ng-repeat="question in event.questions">{{question}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="result in event.results">
+              <td>{{result.intervention}}</td>
+              <td>{{result.started}}</td>
+              <td>{{result.ended}}</td>
+              <td>{{result.type}}</td>
+              <td ng-if="result.type=='media'"><a ng-href="{{result.anwser}}" target="_blank">Mídia</a></td>
+              <td ng-if="result.type!='media'">{{result.anwser}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+         <div class="row">
+          <div class="col-md-12 pull-right">
+            <button type="button" value="save" ng-click="exportCSV($index)" class="btn btn-primary">Exportar CSV</button>
+          </div>
+        </div>
+
+
+      </div>
+  </div>
+  </div>
+</div>

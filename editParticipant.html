@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR" ng-app="espimApp"  ng-controller="mainController">
+  <head>
+    <meta charset='utf-8' />
+    <title>ESPIM - {{pageTitle}}</title>
+
+    <!-- CSS Files -->
+
+    <!-- Bootstrap -->
+   <!--  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css//bootstrap-theme.min.css"> -->
+     <!-- Paper bootstrap -->
+   <link rel="stylesheet" href="css/papel-bootstrap.css">
+    <!-- SweetAlert -->
+    <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css">
+    <!-- Espim -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- JavaScript Files -->
+    <!-- Jquery -->
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- SweetAlert -->
+    <script type="text/javascript" src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
+    <!-- Angular -->
+    <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+    <!-- Google API -->
+    <meta name="google-signin-client_id" content="288369558415-uogknhr1lk4qvd95l52r90gnsnkdgr0h.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" ></script>
+    <script src="https://apis.google.com/js/client:platform.js" ></script>
+    <script src="https://apis.google.com/js/api.js" ></script>
+    <!-- Espim -->
+    <script src="js/espim/access_control.js"></script>
+    <script src="js/espim/model.js"></script>
+    <script src="js/espim/rest_facade.js"></script>
+    <script src="js/espim/util.js"></script>
+  </head>
+  <body>
+
+      <!-- <div ng-include src="'html/header.html'"></div> -->
+      <div ng-include src="'html/menu.html'"></div>
+      <div class="container-background paper-shadow-z1" >
+      <div class="row">
+        <div class="col-md-12">
+          <h4>Adicionar Participante</h4>
+        </div>
+      </div>
+
+      <form id="participantForm" ng-submit="onSubmit()">
+
+        <div ng-include src="'html/ParticipantForm.html'"></div>
+
+        <div class="row">
+          <div class="col-md-12">
+            <button type="submit"                                 class="btn btn-primary">Salvar</button>&nbsp;&nbsp;
+            <button type="button" ng-click="cancel()"             class="btn btn-default">Cancelar</button>&nbsp;&nbsp;
+            <button type="button" ng-click="deleteParticipant()"  class="btn btn-danger">Remover</button>
+          </div>
+        </div>
+      </form>
+
+    </div>
+    <script>
+    var caManager = new ControlAccessManager();
+    if (!caManager.isUserLogged()) {
+      window.location.replace("index.html");
+    }
+    var app = angular.module("espimApp", []);
+    app.controller("mainController", function($scope, $http, $q) {
+      $scope.pageTitle = $scope.headerTitle = "Editar Participante";
+      $scope.profileImage = caManager.user.icon;
+      $scope.username = caManager.user.name;
+      $scope.participantREST = new ParticipantRestFacade($http, $q);
+
+      var participantId = parseInt(getUrlParameter('participantId'));
+
+      $scope.participantREST.getById(participantId).then(
+        function(participant) {
+          $scope.participant = participant;
+        })
+
+      $scope.getMenuClass = function(name) {
+        return name == 'participant' ? 'dropdown active' : 'dropdown';
+      }
+
+      $scope.cancel = function() {
+      swal({
+              title: "Editando Participante",
+              text: "Tem certeza que deseja cancelar as alterações?",
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonText: "Sim",
+              cancelButtonText: "Não",
+              closeOnConfirm: true,
+              closeOnCancel: true
+            }, function(isConfirm) {
+              if (isConfirm) {
+                window.location.replace("listParticipants.html");
+              }
+            });}
+
+      $scope.deleteParticipant = function() {
+        swal({
+              title: "Removendo Participante",
+              text: "Deseja remover o participante '" + $scope.participant.name + "?",
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonText: "Sim",
+              cancelButtonText: "Não",
+              closeOnConfirm: true,
+              closeOnCancel: true
+            }, function(isConfirm) {
+              if (isConfirm) {
+                console.log('deletando');
+
+                $scope.participantREST.delete($scope.participant)
+                  .then(
+                    function successCallback(response) {
+                      swal({
+                        title: "Paricipante Excluído",
+                        text: "Participante excluído com sucesso",
+                        type: "success"
+                      },
+                      function() {
+                        window.location.replace("listParticipants.html");
+                      });
+                    },
+                    function errorCallback(response) {
+                      swal("Erro ao remover",
+                        "Ocorreu o seguinte erro ao tentar remover o participante: " + response.status + ' - ' + response.data.message,
+                        "error");
+                    });
+              }
+            });
+      }
+
+
+      $scope.onSubmit = function() {
+        $scope.participantREST.save($scope.participant)
+          .then(
+            function() {
+              swal({
+                  title: "Paricipante Salvo",
+                  text: "As alterações no participante foram salvadas com sucesso",
+                  type: "success"
+                },
+                function() {
+                  window.location.replace("listParticipants.html");
+                });
+
+            },
+            function(response) {
+              swal({
+                title: "Erro ao Salvar",
+                text: "Ocorreu o seguinte erro ao salvar o participante: " + response.status + ' ' + response.data.message,
+                type: "error",
+                confirmButtonText: "Ok"
+              });
+
+            }
+          );
+      }
+    });
+
+    function logout() {
+      caManager.logout();
+    }
+    </script>
+
+  </body>
+
+</html>

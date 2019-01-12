@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR" ng-app="espimApp"  ng-controller="mainController">
+  <head>
+    <meta charset='utf-8' />
+
+    <title>ESPIM - {{pageTitle}}</title>
+
+    <!-- CSS Files -->
+
+      <!-- Bootstrap -->
+      <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+      <link rel="stylesheet" href="bower_components/bootstrap/dist/css//bootstrap-theme.min.css">
+
+      <!-- SweetAlert -->
+      <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css">
+
+      <!-- Espim -->
+      <link rel="stylesheet" href="css/style.css">
+
+    <!-- JavaScript Files -->
+
+      <!-- Jquery -->
+      <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+
+      <!-- Bootstrap -->
+      <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+      <!-- SweetAlert -->
+      <script type="text/javascript" src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
+
+      <!-- Angular -->
+      <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+
+
+      <!-- Google API -->
+      <meta name="google-signin-client_id" content="288369558415-uogknhr1lk4qvd95l52r90gnsnkdgr0h.apps.googleusercontent.com">
+      <script src="https://apis.google.com/js/platform.js" ></script>
+      <script src="https://apis.google.com/js/client:platform.js" ></script>
+      <script src="https://apis.google.com/js/api.js" ></script>
+
+      <!-- Moment.JS -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.2/moment.min.js"></script>
+
+      <!-- Espim -->
+      <script src="js/espim/accessControl.js"></script>
+      <script src="js/espim/espimModel.js"></script>
+      <script src="js/espim/restFacade.js"></script>
+      <script src="js/espim/util.js"></script>
+
+  </head>
+  <body>
+
+    <div class="container" >
+      <div ng-include src="'html/header.html'"></div>
+      <div ng-include src="'html/menu.html'"></div>
+      <div ng-include src="'html/ProgramsList.html'"></div>
+    </div>
+
+    <script>
+        var caManager = new ControlAccessManager();
+
+        if (!caManager.isUserLogged()) {
+          window.location.replace("index.html");
+        }
+
+        var app = angular.module("espimApp", []);
+        app.controller("mainController", function($scope, $http, $q) {
+          $scope.pageTitle = $scope.headerTitle = "Listar TODOS os Programas";
+          $scope.profileImage = caManager.user.icon;
+          $scope.username = caManager.user.name;
+          $scope.observer = new Observer();
+          $scope.observer.email = caManager.user.email;
+          $scope.observer.id = caManager.user.id;
+          $scope.observer.name = caManager.user.name;
+
+          $scope.getMenuClass = function(name) {
+            return name == 'program' ? 'dropdown active' : 'dropdown';
+          }
+
+          var page = getUrlParameter('page');
+          if (!page) {
+            page = 0;
+          }
+
+          $scope.programREST = new ProgramRestFacade($http, $q);
+
+          $scope.programREST.listAll(page, 20)
+            .then(function(response) {
+
+              //Pagina settings: no pagination for now
+              $scope.currentPage = 1;
+              $scope.lastPage = 1;
+              $scope.firstPage = 1;
+              $scope.totalElements = response.programs.length;
+              $scope.pageRange = [1];
+
+              $scope.programs = response.programs;
+            });
+
+          $scope.deleteProgram = function(program) {
+
+            swal({
+              title: "Removendo Programa",
+              text: "Deseja remover o programa '" + program.title + "?",
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonText: "Sim",
+              cancelButtonText: "Não",
+              closeOnConfirm: true,
+              closeOnCancel: true
+            }, function(isConfirm) {
+              if (isConfirm) {
+
+                $scope.programREST.delete(program)
+                  .then(
+                    function successCallback(response) {
+                      location.reload();
+                    },
+                    function errorCallback(response) {
+                      swal("Erro ao remover",
+                        "Ocorreu o seguinte erro ao tentar remover o programa: " + response.status + ' - ' + response.data.message,
+                        "error");
+                    });
+              }
+            });
+          };
+
+        });
+
+        function logout() {
+          caManager.logout();
+        }
+    </script>
+
+  </body>
+
+</html>

@@ -1,0 +1,217 @@
+  <!DOCTYPE html>
+<html lang="pt-BR" ng-app="espimApp"  ng-controller="mainController">
+  <head>
+    <meta charset='utf-8' />
+
+    <title>ESPIM - {{pageTitle}}</title>
+
+    <!-- CSS Files -->
+
+      <!-- Bootstrap -->
+      <!-- <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+      <link rel="stylesheet" href="bower_components/bootstrap/dist/css//bootstrap-theme.min.css">
+ -->
+      <!-- Paper bootstrap -->
+      <link rel="stylesheet" href="css/papel-bootstrap.css">
+      <!-- SweetAlert -->
+      <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css">
+
+      <!-- Espim -->
+      <link rel="stylesheet" href="css/style.css">
+
+    <!-- JavaScript Files -->
+
+      <!-- Jquery -->
+      <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+
+      <!-- Bootstrap -->
+      <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+      <!-- SweetAlert -->
+      <script type="text/javascript" src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
+
+      <!-- Angular -->
+      <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+
+
+      <!-- Google API -->
+      <meta name="google-signin-client_id" content="288369558415-uogknhr1lk4qvd95l52r90gnsnkdgr0h.apps.googleusercontent.com">
+      <script src="https://apis.google.com/js/platform.js" ></script>
+      <script src="https://apis.google.com/js/client:platform.js" ></script>
+      <script src="https://apis.google.com/js/api.js" ></script>
+
+      <!-- Espim -->
+      <script src="js/espim/access_control.js"></script>
+      <script src="js/espim/model.js"></script>
+      <script src="js/espim/rest_facade.js"></script>
+      <script src="js/espim/util.js"></script>
+
+  </head>
+  <body>
+    <div ng-include src="'html/menu.html'"></div>
+    <div class="" >
+      <!-- <div ng-include src="'html/header.html'"></div> -->
+      <div class="container-background paper-shadow-z1">
+        <h4>Lista de Participantes</h4>
+        <div ng-include src="'html/ParticipantList.html'"></div>
+      </div>
+    </div>
+
+    <script>
+        var caManager = new ControlAccessManager();
+
+        if (!caManager.isUserLogged()) {
+          window.location.replace("index.html");
+        }
+
+        var app = angular.module("espimApp", []);
+        app.controller("mainController", function($scope, $http, $q) {
+          console.log($scope);
+
+          $scope.pageTitle = $scope.headerTitle = "Listar Participantes";
+          $scope.profileImage = caManager.user.icon;
+          $scope.username = caManager.user.name;
+          $scope.email = caManager.user.email;
+          // $scope.message = caManager.message;
+
+
+          $scope.getMenuClass = function(name) {
+            return name == 'participant' ? 'dropdown active' : 'dropdown';
+          }
+
+          var page = getUrlParameter('page');
+          if (!page) {
+            page = 0;
+          }
+
+          $scope.participantREST = new ParticipantRestFacade($http, $q);
+
+          $scope.observerREST = new ObserverRestFacade($http, $q);
+
+          var observer = new Observer();
+          observer.id = caManager.user.id;
+          observer.name = caManager.user.name;
+          observer.email = caManager.user.email;
+
+          //$scope.participantREST.listAll(page, 20)
+
+
+          $scope.observerREST.getContacts(observer, page, 20)
+            .then(function(response) {
+
+              var pageData = response.page;
+
+              var currentPage = pageData['number'];
+              var totalPages = pageData['totalPages'];
+              var totalElements = pageData['totalElements'];
+              var firstPage, lastPage;
+
+              if (currentPage - 2 >= 0) {
+                firstPage = currentPage - 2;
+              } else {
+                firstPage = 0;
+              }
+
+              if (currentPage + 2 <= totalPages - 1) {
+                lastPage = currentPage + 2
+              } else {
+                lastPage = totalPages - 1;
+              }
+
+              /*$scope.currentPage = currentPage;
+              $scope.lastPage = lastPage;
+              $scope.firstPage = firstPage;*/
+
+              $scope.currentPage = 0;
+              $scope.lastPage = 0;
+              $scope.firstPage = 0;
+              $scope.totalElements = totalElements;
+
+              var pageRange = [];
+
+              for (var i = $scope.firstPage; i <= $scope.lastPage; i++) {
+                pageRange.push(i + 1);
+              }
+
+              $scope.pageRange = pageRange;
+
+              $scope.participants = response.contacts;
+            });
+
+          $scope.deleteParticipant = function(id, name) {
+
+            swal({
+              title: "Removendo Participante",
+              text: "Deseja remover o participante '" + name + "?",
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonText: "Sim",
+              cancelButtonText: "Não",
+              closeOnConfirm: true,
+              closeOnCancel: true
+            }, function(isConfirm) {
+              if (isConfirm) {
+
+                var participant = new Participant();
+                participant.id = id;
+
+                $scope.participantREST.delete(participant)
+                  .then(
+                    function successCallback(response) {
+                      location.reload();
+                    },
+                    function errorCallback(response) {
+                      swal("Erro ao remover",
+                        "Ocorreu o seguinte erro ao tentar remover o participante: " + response.status + ' - ' + response.data.message,
+                        "error");
+                    });
+              }
+            });
+          };
+
+          $scope.filterField = 'name';
+
+          /*$scope.myFilter = function(participant) {
+            if ($scope.filterValue == null || $scope.filterValue == "") {
+              return true;
+            }
+
+            //console.log(participant[$scope.filterField].toUpperCase(), $scope.filterValue);
+            //return true;
+            if (participant[$scope.filterField].toUpperCase().contains($scope.filterValue.toUpperCase())) {
+              return true;
+            }
+            return false;
+          };*/
+
+        });
+
+        app.filter('participantFilter', function () {
+          return function (items, value, field) {
+
+            if (value == null || value == "") {
+              return items;
+            }
+
+            var filteredItens = [];
+            var upperValue = value.toUpperCase();
+
+            for (var i = 0; i < items.length; i++) {
+              var item = items[i];
+              if (item[field].toUpperCase().indexOf(upperValue) >= 0) {
+                filteredItens.push(item);
+              }
+
+            }
+            return filteredItens;
+          };
+        });
+
+        function logout() {
+          caManager.logout();
+        }
+    </script>
+
+  </body>
+
+</html>

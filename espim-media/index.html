@@ -1,0 +1,342 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="pt">
+<html>
+<head>
+  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  	<title>ESPIN - Vídeo</title>
+
+  	<link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+
+  	<script src="js/jquery-3.1.1.min.js"></script>
+  	<script src="js/bootstrap.min.js"></script>
+  	<script src="js/RecordRTC.min.js"></script>
+    <script src="js/getMediaElement.js"></script>
+    <script src="https://apis.google.com/js/client.js?onload=googleApiClientReady">   </script>
+
+
+    <style>
+      .videoBlocks {
+        display:inline-block;
+      }
+
+
+      .videoPlaceHolder {
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        width:480px;
+        height:360px;
+        font-size:20em;
+        background: #e6f2ff;
+      }
+
+      .videoPlayer {
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        width:480px;
+        height:360px;
+      }
+
+
+    </style>
+  	
+</head>
+
+<body>
+
+	<div class="container">
+  		<h2>Selecione a fonte do vídeo</h2>
+		 	<ul class="nav nav-tabs">
+		    	<li class="active"><a data-toggle="tab" href="#record">
+            Gravar um vídeo 
+            <span class="glyphicon glyphicon-facetime-video"></span>
+          </a></li>
+		    	<li><a data-toggle="tab" href="#upload">
+            Enviar um vídeo
+            <span class="glyphicon glyphicon-upload">
+          </a></li>
+		    	<li><a data-toggle="tab" href="#youtube">
+            YouTube
+            <span class="fa fa-youtube-square" aria-hidden="true"></span>
+          </a></li>
+		  	</ul>
+
+  <div class="tab-content">
+    <div id="record" class="tab-pane fade in active">
+      	<h3>Gravar um vídeo</h3>
+     	  <p>Grave um vídeo utilizando sua Webcam.</p>
+
+        <div id="videosContainer" class="videoBlocks">
+            <div id="webcamPlaceholder" class="videoPlaceHolder">
+              <span class="fa fa-video-camera" ></span>
+            </div>
+            <video id="webcam" class="videoPlayer" muted  style="display: none";>
+        </div>
+
+        <div id="divRecorded" class="videoBlocks">
+            <div id="recordedPlaceholder" class="videoPlaceHolder">
+              <span class="fa fa-youtube-play" ></span>
+            </div>
+            <video id="recordedVideo" class="videoPlayer" controls style="display: none">
+        </div>
+
+        <p>
+        <div>
+          	<button id="open" class="btn btn-primary active">Abrir Webcam</button>
+            <button id="startRecording" class="btn disabled" disabled>Iniciar Gravação</button>
+          	<button id="stopRecording" class="btn disabled" disabled>Encerrar Gravação</button>
+           	<button id="save" class="btn disabled" disabled>Salvar Localmente</button>
+            <button id="sendRecord" class="btn disabled" disabled>Enviar Vídeo</button>
+        </div>
+
+        
+
+
+       	<script type="text/javascript">
+       		function captureUserMedia(mediaConstraints, successCallback, errorCallback) {
+            	//navigator.mediaDevices.getUserMedia();
+              navigator.getUserMedia(mediaConstraints, successCallback, errorCallback);
+        	}
+
+        	var mRecordRTC = new MRecordRTC();
+        	mRecordRTC.mediaType = {
+            	audio: true,
+            	video: true 
+        	};
+
+        	$("#open").click(function () {
+
+              var openBtn = $("#open");
+              openBtn.addClass("disabled");
+              openBtn.removeClass("active");
+              openBtn.prop("disabled", true);
+
+              var recordingBtn = $("#startRecording");
+              recordingBtn.addClass("active");
+              recordingBtn.removeClass("disabled");
+              recordingBtn.prop("disabled", false);
+
+
+              $("#webcamPlaceholder").hide();
+              $("#webcam").show();
+
+
+
+        			captureUserMedia({
+                		audio: true,
+                		video: true
+            		}, 
+            		function(stream) {
+
+                		var video = $('#webcam')[0];
+                    video.src = null;
+                    console.log(video);
+
+                    video.src = URL.createObjectURL(stream);
+                    video.play();
+                		
+                  
+                	mRecordRTC.addStream(stream);
+                	//mRecordRTC.startRecording();
+               	},
+               	function(error) {
+                	alert("Error:" + JSON.stringify(error));
+            	});
+        	});
+
+
+        $('#startRecording').click(function() {
+
+            var recordingBtn = $("#startRecording");
+            recordingBtn.addClass("disabled");
+            recordingBtn.removeClass("active");
+            recordingBtn.prop("disabled", true);
+
+
+            var stopRecordingBtn = $("#stopRecording");
+            stopRecordingBtn.addClass("active");
+            stopRecordingBtn.removeClass("disabled");
+            stopRecordingBtn.prop("disabled", false);
+
+            mRecordRTC.startRecording();
+        });
+
+
+
+        $('#stopRecording').click(function() {
+            var recordingBtn = $("#startRecording");
+            recordingBtn.addClass("active");
+            recordingBtn.removeClass("disabled");
+            recordingBtn.prop("disabled", false);
+
+
+            var stopRecordingBtn = $("#stopRecording");
+            stopRecordingBtn.addClass("disabled");
+            stopRecordingBtn.removeClass("active");
+            stopRecordingBtn.prop("disabled", true);
+
+            var saveBtn = $("#save");
+            saveBtn.addClass("active");
+            saveBtn.removeClass("disabled");
+            saveBtn.prop("disabled", false);
+
+            var sendBtn = $("#sendRecord");
+            sendBtn.addClass("active");
+            sendBtn.removeClass("disabled");
+            sendBtn.prop("disabled", false);
+
+            $("#recordedPlaceholder").hide();
+            $("#recordedVideo").show();
+
+
+            mRecordRTC.stopRecording(function(url, type) {
+                var video = $("#recordedVideo")[0];
+                video.src = null;
+                console.log(url);   
+
+                video.src = url;
+                //video.play();
+                mRecordRTC.writeToDisk();
+                //save.disabled = false;
+            });
+        });
+
+
+        $('#save').click(function() {
+            //this.disabled = true;
+            mRecordRTC.save();
+        });
+
+       	</script>
+    </div>
+    <div id="upload" class="tab-pane fade">
+    	<h3>Enviar um vídeo</h3>
+      	<p>Escolha um arquivo de vídeo existente em seu computador para enviar.</p>
+
+      	
+      	<video id="uploadVideo" width="480" height="360" controls></video>
+
+        <p><label class="btn btn-primary btn-file" style="display: inline-block;">
+          Selecione <input type="file" accept="video/mp4" capture="camera" id="fileUploader" style="display: none;">
+        </label>
+        <button id="sendUpload" class="btn disabled" disabled>Enviar</button>
+
+      	<script>
+      		var uploadedFile = document.getElementById('fileUploader');
+			     var video = document.getElementById('uploadVideo');
+
+			uploadedFile.addEventListener('change', function(e) {
+			    var file = e.target.files[0]; 
+			    // Do something with the audio file.
+			    video.src = URL.createObjectURL(file);
+
+
+          var sendBtn = $("#sendUpload");
+              sendBtn.addClass("active");
+              sendBtn.removeClass("disabled");
+              sendBtn.prop("disabled", false);
+			  });
+		</script>
+
+
+    </div>
+    <div id="youtube" class="tab-pane fade">
+        <h3>YouTube</h3>
+        <p>Cole o endereço de um vídeo do YouTube.</p>
+        <label class="form-inline"> 
+          <input id="query" class="form-control" placeholder="Busca ou endereço" type="text"/>
+          <button id="search-button"  class="btn btn-primary"  onclick="keyWordsearch()">Buscar</button>
+        </label>    
+          
+        <div id="resultsContainer" style="display:none;">
+          <h4>Resultado da Busca</h4>
+          <div id="results" class="list-group" style="width: 520px;"></div>
+          <button id="sendYouTube" class="btn active">Enviar Vídeo</button>
+        </div>       
+
+        <script>
+
+        function IsURL(url) {
+
+            var strRegex = "^((https|http|ftp|rtsp|mms)?://)"
+                + "?(([0-9a-z_!~*'().&=+$%-]+: )?[0-9a-z_!~*'().&=+$%-]+@)?" //ftp的user@
+                + "(([0-9]{1,3}\.){3}[0-9]{1,3}" // IP形式的URL- 199.194.52.184
+                + "|" // 允许IP和DOMAIN（域名）
+                + "([0-9a-z_!~*'()-]+\.)*" // 域名- www.
+                + "([0-9a-z][0-9a-z-]{0,61})?[0-9a-z]\." // 二级域名
+                + "[a-z]{2,6})" // first level domain- .com or .museum
+                + "(:[0-9]{1,4})?" // 端口- :80
+                + "((/?)|" // a slash isn't required if there is no file name
+                + "(/[0-9a-z_!~*'().;?:@&=+$,%#-]+)+/?)$";
+             var re=new RegExp(strRegex);
+             return re.test(url);
+         }
+
+
+         function keyWordsearch(){
+            var q = $('#query').val();
+
+            if (IsURL(q)) {
+              gapi.client.setApiKey('AIzaSyBq3yWOu9pJkYSxHFNL9mKZIP4IWelpw9A');
+              gapi.client.load('youtube', 'v3', function(){
+                    makeRequest(q);
+              });
+            } else {
+              embedVideo(q);
+            }
+
+            
+        }
+
+
+        function embedVideo(url) {
+          $('#resultsContainer').show();
+          $('#results').empty()
+
+            var begin = url.indexOf('?v=') +3;
+            var videoId = url.substring(begin);
+            var end = url.indexOf('?');
+            if (end > 0) {
+              videoId = videoId.substring(0, end);
+            }
+            console.log(videoId);
+
+
+            var frame = '<iframe width="480" height="360" src="http://www.youtube.com/embed/' + videoId + '" frameborder="0" allowfullscreen></iframe> '
+
+            $('#results').append(frame); 
+        }
+
+        function makeRequest(q){
+            
+            var request = gapi.client.youtube.search.list({
+                    q: q,
+                    part: 'snippet', 
+                    maxResults: 10
+            });
+            request.execute(function(response)  {
+
+                    $('#resultsContainer').show();                                                                                    
+                    $('#results').empty()
+                    var srchItems = response.result.items;                      
+                    $.each(srchItems, function(index, item){
+                      var videoId = item.id.videoId;     
+                      var frame = '<iframe width="480" height="360" src="http://www.youtube.com/embed/' + videoId + '" frameborder="0" allowfullscreen></iframe> '           
+
+                    $('#results').append('<pre>' + frame +   '</pre>');  
+
+
+                  })
+
+                     
+          })  
+        }
+      </script>     
+  </div>
+</div>
+
+  
+</body>
+</html>

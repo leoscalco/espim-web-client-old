@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+	<meta charset="utf-8">
+	<title>ESPIM - Editor de Intervenções</title>
+      <!-- Bootstrap -->
+      <!-- <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+      <link rel="stylesheet" href="bower_components/bootstrap/dist/css//bootstrap-theme.min.css">
+       -->
+       <!-- Paper bootstrap -->
+       <link rel="stylesheet" href="css/papel-bootstrap.css">
+       <link rel="stylesheet" href="css/font-awesome.min.css">
+
+      <!-- SweetAlert -->
+      <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css">
+
+
+      <link rel="stylesheet" href="css/editor.css">
+
+
+       <!-- Jquery -->
+      <!--script type="text/javascript" src="js/jquery-editor.js"></script-->
+      <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+
+
+      <!-- Jquery Ui -->
+      <script type="text/javascript" src="js/jquery-ui-min.js"></script>
+
+      <!-- Bootstrap -->
+      <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+      <!-- SweetAlert -->
+      <script type="text/javascript" src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
+
+      <!-- Angular -->
+      <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+
+      <!-- File Saver -->
+      <script type="text/javascript" src="bower_components/file-saver/FileSaver.min.js"></script>
+
+
+      <script type="text/javascript" src="js/espim/interventions_editor.js"></script>
+      <script type="text/javascript" src="js/espim/interventions.js"></script>
+
+</head>
+
+<body>
+	<nav class="navbar navbar-primary navbar-inverse navbar-fixed-top navbar-editor">
+		<div class="container-fluid" style="font-size: 18px;">
+			<div class="nav navbar-nav navbar-nav-general">
+					<a href="home.html"><img src="img/logo-espim-web/logo-espim-web.png"
+				     srcset="img/logo-espim-web/logo-espim-web@2x.png 2x,
+				             img/logo-espim-web/logo-espim-web@3x.png 3x"
+				     class="logo_espim_web"></a>
+				</div>
+			<div class="navbar-header">
+				<a class="navbar-brand" href="#">ESPIM</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-center">
+					<li class="dropdown adicionarBTN" >
+						<a href="#" class="dropdown-toggle " data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Adicionar</a>
+						<ul class="dropdown-menu" role="menu">
+							<li><a class="addBlock" id="addOpenQuestion" href="#"><i class="fa fa-align-left fa-1x" aria-hidden="true"></i> Questão aberta</a></li>
+							<li><a class="addBlock" id="addEmpty" href="#"><i class="fa fa-comment fa-1x" aria-hidden="true"></i> Mensagem</a></li>
+							<li><a class="addBlock" id="addMult" href="#"><i class="fa fa-dot-circle-o  fa-1x" aria-hidden="true"></i> Escolha Única</a></li>
+							<li><a class="addBlock" id="addCheck" href="#"><i class="fa fa-check-circle-o fa-1x" aria-hidden="true"></i> Escolha Múltipla</a></li>
+							<li><a class="addBlock" id="addMedia" href="#"><i class="fa fa-video-camera fa-1x" aria-hidden="true"></i> Solicitar Mídia</a></li>
+							<li><a class="addBlock" id="addTask" href="#"><i class="fa fa-mobile-phone" style="font-size:20px"></i> Aplicação externa</a></li>
+						</ul>
+					</li>
+					<li class="disabled"><a id="undo" href="#"><i class="fa fa-undo" aria-hidden="true"></i> Desfazer</a></li>
+					<li class="disabled"><a id="redo" href="#"><i class="fa fa-repeat" aria-hidden="true"></i> Refazer</a></li>
+
+					<!-- <li class="divider-vertical"></li> -->
+
+
+					<li><a href="#" id="zoom-in"><i class="glyphicon glyphicon-zoom-in" aria-hidden="true"></i> Mais zoom</a></li>
+					<li><a href="#" id="zoom-out"><i class="glyphicon glyphicon-zoom-out" aria-hidden="true"></i> Menos zoom</a></li>
+
+					<!-- <li class="divider-vertical"></li> -->
+					<li><a href="#" id="import">Importar <span class="	glyphicon glyphicon-import" aria-hidden="true"></span></a></li>
+					<li><a href="#" id="export">Exportar <span class="glyphicon glyphicon-export" aria-hidden="true"></span></a></li>
+
+				<!-- </ul>
+				<ul class="nav navbar-nav navbar-right"> -->
+				<li><a id="finish" href="#"><i class="fa fa-floppy-o" aria-hidden="true"></i> Concluir</a></li>
+
+					<!--li><a href="#" data-toggle="modal" data-target=".modal-help">Ajuda</a></li-->
+				</ul>
+			</div><!--/.nav-collapse -->
+		</div>
+	</nav>
+	<!-- <div class="row">
+		<div class="col-md-2">
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav nav-pills nav-stacked lateral-menu">
+				   	<li>
+				   		<div class="btn-group btn-group-justified">
+		  					<a class="addBlock btn btn-default" href="#" id="addOpenQuestion">
+		  						<i class="fa fa-align-left fa-3x" aria-hidden="true"></i><br/>Questão aberta
+		  					</a>
+						</div>
+					</li>
+				   <li>cetriri</li>
+				   <li>pet</li>
+				</ul>
+			</div>
+		</div>
+	</div> -->
+
+	<div class="float-button">
+		<a href="#" class="btn btn-primary" onclick="ShowAddInterventionsModal()" data-toggle="addInterventionModal" data-target="#addInterventionModal">
+			<i class="fa fa-plus fa-2x"></i>
+		</a>
+	</div>
+
+	<div id="background">
+		<canvas id="myCanvas">
+		</canvas>
+		<div id="panel-group">
+		</div>
+
+	</div>
+
+	<div id="addInterventionModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title"><h4>Escolhe entre as seguintes intervenções:</h4>
+        </div>
+
+        <div class="modal-body modal-intervention row">
+        	<div class="col-xs-6">
+	    		<ul class="nav nav-pills nav-stacked">
+				   	<li>
+				   		<div class="btn-group btn-group-justified">
+		  					<a class="addBlock btn btn-default" href="#" id="addOpenQuestion" data-dismiss="modal">
+		  						<i class="fa fa-align-left fa-3x" aria-hidden="true"></i><br/>Questão aberta
+		  					</a>
+						</div>
+					</li>
+					<br/>
+					<li>
+				   		<div class="btn-group btn-group-justified">
+		  					<a class="addBlock btn btn-default" href="#" id="addMult" data-dismiss="modal">
+		  						<i class="fa fa-dot-circle-o  fa-3x" aria-hidden="true"></i><br/>Escolha Única
+		  					</a>
+						</div>
+					</li>
+					<br/>
+					<li>
+				   		<div class="btn-group btn-group-justified">
+		  					<a class="addBlock btn btn-default" href="#" id="addMedia" data-dismiss="modal">
+		  						<i class="fa fa-video-camera fa-3x" aria-hidden="true"></i><br/>Solicitar Mídia
+		  					</a>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<div class="col-xs-6">
+	    		<ul class="nav nav-pills nav-stacked">
+					<li>
+				   		<div class="btn-group btn-group-justified">
+		  					<a class="addBlock btn btn-default" href="#" id="addEmpty" data-dismiss="modal">
+		  						<i class="fa fa-comment fa-3x" aria-hidden="true"></i><br/>Mensagem
+		  					</a>
+						</div>
+					</li>
+					<br/>
+					<li>
+				   		<div class="btn-group btn-group-justified">
+		  					<a class="addBlock btn btn-default" href="#" id="addCheck" data-dismiss="modal">
+		  						<i class="fa fa-check-circle-o fa-3x" aria-hidden="true"></i><br/>Escolha Múltipla
+		  					</a>
+						</div>
+					</li>
+					<br/>
+					<li>
+				   		<div class="btn-group btn-group-justified">
+		  					<a class="addBlock btn btn-default" href="#" id="addTask" data-dismiss="modal">
+		  						<i class="fa fa-mobile-phone " style="font-size:44px" aria-hidden="true"></i><br/>Aplicação externa
+		  					</a>
+						</div>
+					</li>
+				</ul>
+			</div>
+        </div>
+        <!-- <br/> -->
+
+      </div>
+    </div>
+  </div>
+
+
+	<div id="problemsModal" class="modal fade alert" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+          <h4 style="font-weight: 400;">Problemas Encontrados</h4>
+        </div>
+
+        	<ul class="list-group">
+        	</ul>
+
+        <div class="modal-footer center-text">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <input type="file" accept="text/json" id="fileSelector" style="display: none;">
+
+	<script>
+
+		var editor = new InterventionEditor('#background', '#panel-group', document.getElementById("myCanvas"));
+
+		var dirtyFlag = true;
+
+		editor.initPosition();
+
+
+		function refresh() {
+			editor.refreshSelects();
+			editor.refreshRoutes();
+		}
+
+
+		$(document).ready(function(){
+
+			editor.resize();
+
+			$(document).on( "click", ".addBlock", function(e) {
+				e.preventDefault();
+				console.log($(this).attr('id'));
+				editor.addInterventinBlock($(this).attr('id'));
+			});
+
+
+			$(window).resize(function() {
+				editor.refreshCreateArea();
+			});
+
+
+
+			$(document).scroll(function() {
+				editor.refreshCreateArea();
+			});
+
+			$(document).on( "click", "#zoom-in", function(e) {
+
+				e.preventDefault();
+
+				if (editor.zoom < 1) {
+					$("#zoom-out").css('opacity',1);
+					editor.zoom = editor.zoom + 0.1;
+					$('#background').animate({ 'zoom': editor.zoom }, 200);
+
+					editor.resize();
+					editor.refreshRoutes();
+				}
+			});
+
+			$(document).on( "click", "#zoom-out", function(e) {
+
+				e.preventDefault();
+
+				if (editor.zoom > 0.6) {
+					$("#zoom-in").css('opacity',1);
+					editor.zoom = editor.zoom - 0.1;
+					$('#background').animate({ 'zoom': editor.zoom }, 200);
+
+					editor.resize();
+					editor.refreshRoutes();
+				}
+			});
+
+			$(document).on( "click", "#finish", function(e) {
+
+					var problems = editor.getProblems();
+
+					if (problems.length > 0) {
+						showProblems(problems)
+					} else {
+						swal({
+			              title: "Concluindo o Planejamento",
+			              text: "Deseja concluir o planejamento das intervenções?",
+			              type: "info",
+			              showCancelButton: true,
+			              confirmButtonText: "Sim",
+			              cancelButtonText: "Não",
+			              closeOnConfirm: true,
+			              closeOnCancel: true
+			            }, function(isConfirm) {
+			              if (isConfirm) {
+			              	localStorage.removeItem('EDITOR_STATE');
+			              	var blocks = editor.getState().blocks;
+			              	var interventions = []
+
+			              	for (var i=0; i < blocks.length; i++) {
+			              		interventions.push(blocks[i][0]);
+			              	}
+
+			              	window.opener.interventionsCallBack(interventions);
+			              	dirtyFlag = false;
+			              	window.close();
+
+			              }
+			            });
+				}
+
+			});
+
+			$(document).on( "click", "#undo", function(e) {
+				editor.previousState();
+			});
+
+
+
+			$(document).on( "click", "#redo", function(e) {
+				editor.nextState();
+			});
+
+
+			$(document).on( "click", "#export", function(e) {
+				var jsonState = JSON.stringify(editor.getState());
+
+				var blob = new Blob([jsonState], {type: "text/plain;charset=utf-8"});
+            	saveAs(blob, "espim_intervenções.json");
+			});
+
+
+			$(document).on( "click", "#import", function(e) {
+				$('#fileSelector').click();
+			});
+
+			$('#fileSelector').on('change', function() {
+				    var file = this.files[0];
+				    if (file == undefined) {
+				    	return;
+				    }
+
+				    swal({
+		              title: "Importando Planejamento",
+		              text: "Deseja Importar o planejamento de intervenções contidas no arquivo '" + file.anme + "'?",
+		              type: "info",
+		              showCancelButton: true,
+		              confirmButtonText: "Sim",
+		              cancelButtonText: "Não",
+		              closeOnConfirm: true,
+		              closeOnCancel: true
+		            }, function(isConfirm) {
+		              if (isConfirm) {
+		              	var reader = new FileReader();
+
+		              	reader.onload = function() {
+				            editor.loadState(JSON.parse(reader.result));
+		              		editor.saveState();
+				        };
+
+				        reader.readAsText(file);
+		              }
+		            });
+				});
+
+
+			if (window.parentInterventions) {
+				editor.loadFromParent(window.parentInterventions);
+
+			} else if (localStorage.EDITOR_STATE != undefined) {
+
+				swal({
+	              title: "Recuperando Planejamento",
+	              text: "Há um planejamento de intervenções não concluído na memória local. Deseja recuperá-lo?",
+	              type: "info",
+	              showCancelButton: true,
+	              confirmButtonText: "Sim",
+	              cancelButtonText: "Não",
+	              closeOnConfirm: true,
+	              closeOnCancel: true
+	            }, function(isConfirm) {
+	              if (isConfirm) {
+	              	editor.loadState(JSON.parse(localStorage.EDITOR_STATE));
+	              	editor.saveState();
+	              } else {
+	              	localStorage.removeItem('EDITOR_STATE');
+	              }
+	            });
+
+		}
+
+});
+
+window.addEventListener("beforeunload", function (e) {
+	if (dirtyFlag) {
+		var confirmationMessage = 'Se você sair desta página sem pressionar o botão "Concluir", as intervenções criadas serão perdidas.';
+
+	    (e || window.event).returnValue = confirmationMessage; //Gecko + IE
+	    return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
+	}
+	return;
+
+});
+
+function mediasCallBack(result) {
+	console.log(result);
+
+	editor.getBlockByNumber(result.id).addMedia(result.mediaType, result.url);
+}
+
+
+function showProblems(problems) {
+	console.log('showProblems', problems);
+
+	var list = $('#problemsModal').find('ul');
+
+	console.log(list);
+
+	$(list).empty();
+
+
+
+	var str = '';
+	for (var i=0; i < problems.length; i++) {
+		var parts = problems[i].split(':');
+
+		if (parts.length > 1) {
+			str += '<li class="list-group-item "><strong class="ourBlue">' + parts[0] + ':</strong> ' + parts[1] + '</li>'
+		} else {
+			str += '<li class="list-group-item "><strong class="ourBlue">' + problems[i] + '</strong></li>'
+		}
+
+
+
+
+	}
+	str += '';
+
+	$(list).append(str);
+	$('#problemsModal').modal();
+
+}
+
+function ShowAddInterventionsModal(){
+	$('#addInterventionModal').modal();
+}
+
+
+</script>
+</body>
+
+</html>

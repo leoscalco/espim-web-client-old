@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-BR" ng-app="espimApp"  ng-controller="mainController">
+  <head>
+    <title>ESPIM - {{pageTitle}}</title>
+    <meta charset='utf-8' />
+
+    <!-- Latest compiled and minified CSS -->
+   <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> -->
+
+   <!-- Optional theme -->
+   <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"> -->
+   <link rel="stylesheet" href="css/papel-bootstrap.css">
+
+
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" integrity="sha256-iXUYfkbVl5itd4bAkFH5mjMEN5ld9t3OHvXX3IU8UxU=" crossorigin="anonymous" />
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert-dev.js" integrity="sha256-Y6AEuvugryve80FgzPE3e2EONgfiYPcaSaqF+vIFGIA=" crossorigin="anonymous"></script>
+
+
+   <link rel="stylesheet" href="css/style.css">
+
+
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+
+    <!-- Latest compiled and minified JavaScript -->
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+
+
+      <!-- Angular -->
+      <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+
+
+
+
+      <!-- Google API -->
+      <meta name="google-signin-client_id" content="288369558415-uogknhr1lk4qvd95l52r90gnsnkdgr0h.apps.googleusercontent.com">
+      <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
+      <script src="https://apis.google.com/js/client:platform.js" ></script>
+      <script src="https://apis.google.com/js/api.js" ></script>
+
+
+
+      <!-- Espim -->
+      <script src="js/espim/access_control.js"></script>
+      <script src="js/espim/model.js"></script>
+      <script src="js/espim/rest_facade.js"></script>
+
+
+
+  </head>
+  <body>
+      <div ng-include src="'html/menuSimples.html'"></div>
+
+    <div class="" >
+    <div class="container-background paper-shadow-z1">
+   <div class="row">
+    <div class="col-md-12">
+            <h4>Informações extras</h4>
+          </div>
+      <div class="col-md-2">
+
+
+       </div>
+       <div class="col-md-10">
+          <form class="form-horizontal"  ng-submit="login()">
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="email">E-mail:</label>
+                <div class="col-sm-6">
+                    <input type="email" class="form-control" ng-model="user.email" id="txtEmail" placeholder="Enter email"disabled>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="text">Nome:</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" ng-model="user.name" id="txtNome" placeholder="Diga seu nome" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="text">Papel:</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" ng-model="user.role" id="txtRole" placeholder="Insira aqui o seu papel. Ex: Psicóloga" required>
+                </div>
+            </div>
+            <!--div class="form-group">
+                <label class="control-label col-sm-2" for="pwd">Password:</label>
+                <div class="col-sm-6">
+                    <input type="password" class="form-control" id="pwd" placeholder="Enter password">
+                </div>
+            </div-->
+            <!--div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <div class="checkbox">
+                    <label><input type="checkbox"> Manter conectado</label>
+                  </div>
+                </div>
+            </div-->
+            <div class="form-group">
+              <div class="col-sm-offset-5 col-sm-10 pull-right">
+              <button type="submit" class="btn btn-primary">Entrar <span class="glyphicon glyphicon-log-in"></span></button>
+
+              <button class="btn btn-default" ng-click='cancelar()'>Cancelar</span></button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+  </div>
+
+
+   </div>
+   </div>
+
+
+
+<script>
+
+  var caManager = new ControlAccessManager();
+  var observer;
+  if (caManager.isUserLogged()) {
+    window.location.replace("home.html");
+  } /*else if (!caManager.hasUser()) {
+    window.location.replace("index.html");
+  }*/
+
+  var app = angular.module("espimApp", []);
+  app.controller("mainController", function($scope, $http, $q) {
+      $scope.pageTitle = "Primeiro Acesso";
+      console.log(caManager.user);
+
+      $scope.profileImage = caManager.user.icon;
+      $scope.username = caManager.user.name;
+
+      $scope.user = new Observer();
+      $scope.user.name = caManager.user.name;
+      $scope.user.email = caManager.user.email;
+
+
+      $scope.login = function() {
+        var restFacade = new ObserverRestFacade($http, $q);
+        restFacade.add($scope.user).then(successAdding, errorAdding);
+      }
+
+      $scope.cancelar = function() {
+        caManager.logout();
+      }
+  });
+
+
+  function successAdding(observer) {
+    console.log(observer);
+    caManager.login(observer);
+
+    swal({
+      title: "Login Efetuado",
+      text: "Observador adicionado com sucesso",
+      type: "success"
+      },
+      function() {
+        window.location.replace("home.html");
+    });
+  }
+
+  function errorAdding(response) {
+    console.log(response);
+    swal("Erro ao logar",
+            "Ocorreu um seguinte erro tentar efetuar o login:",
+            "error");
+
+  }
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR" ng-app="espimApp"  ng-controller="mainController">
+  <head>
+    <meta charset='utf-8' />
+
+    <title>ESPIM - {{pageTitle}}</title>
+
+    <!-- CSS Files -->
+
+      <!-- Bootstrap -->
+      <!-- <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+      <link rel="stylesheet" href="bower_components/bootstrap/dist/css//bootstrap-theme.min.css">
+ -->
+      <!-- Paper bootstrap -->
+      <link rel="stylesheet" href="css/papel-bootstrap.css">
+      <!-- font-awesome -->
+      <link rel="stylesheet" href="css/font-awesome.min.css">
+
+      <!-- SweetAlert -->
+      <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css">
+
+      <!-- Espim -->
+      <link rel="stylesheet" href="css/style.css">
+
+    <!-- JavaScript Files -->
+
+      <!-- Jquery -->
+      <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+
+      <!-- Bootstrap -->
+      <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+      <!-- SweetAlert -->
+      <script type="text/javascript" src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
+
+      <!-- Angular -->
+      <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+
+
+      <!-- Google API -->
+      <meta name="google-signin-client_id" content="288369558415-uogknhr1lk4qvd95l52r90gnsnkdgr0h.apps.googleusercontent.com">
+      <script src="https://apis.google.com/js/platform.js"></script>
+      <script src="https://apis.google.com/js/client:platform.js" ></script>
+      <script src="https://apis.google.com/js/api.js" ></script>
+
+      <!-- Espim -->
+      <script src="js/espim/access_control.js"></script>
+      <script src="js/espim/model.js"></script>
+      <script src="js/espim/rest_facade.js"></script>
+
+  </head>
+  <body>
+
+      <div ng-include src="'html/menu.html'"></div>
+    <div class="container-background paper-shadow-z1">
+
+      <div class="row" style="margin: auto; vertical-align: middle; display: table;">
+        <div class="">
+        <a href="home.html" style="font-size: 40px;">
+        <img style="height: 150px; width: auto" src="img/logo-dark-2/logo-dark-2@3x.png"
+             class="logo_espim_web"></a>
+      </div>
+    </div><br>
+      <!-- <div ng-include src="'html/header.html'"></div> -->
+          <h5 class="text-justify">O Método de Amostragem de Experiências e Intervenção Programada <strong>(ESPIM)</strong>
+          combina procedimentos selecionados do campo da Psicologia, como Programação de Ensino Individualizada e
+        Método de Amostragem de Experiências (ESM), e as vantagens proporcionadas pela Computação Ubíqua com o
+      objetivo de ampliar o alcance da coleta de dados e intervenções a distância em ambientes naturais.
+    O método é suportado por um sistema computacional desenvolvidos para as plataformas Web e mobile. Ele permite que se
+  programem intervenções baseadas em dados coletados de maneira explícita ou pervasiva. O sistema suporta a troca de dados entre as
+diferentes partes interessadas envolvidas no planejamento da coleta de dados e/ou intervenção. Espera-se que o ESPIM permita a
+pesquisadores e profissionais de diversas áreas de conhecimento, como educação e saúde, criar e executar experimentos ou intervenções conduzidos a distância. </h5>
+
+    </div>
+
+    <script>
+        var caManager = new ControlAccessManager();
+
+        if (!caManager.isUserLogged()) {
+          console.log('isUserLogged');
+          window.location.replace("index.html");
+        }
+
+        var app = angular.module("espimApp", []);
+        app.controller("mainController", function($scope) {
+          $scope.pageTitle = $scope.headerTitle = "Página Inicial";
+          $scope.profileImage = caManager.user.icon;
+          $scope.username = caManager.user.name;
+          $scope.email = caManager.user.email;
+
+        });
+
+        function logout() {
+          caManager.logout();
+        }
+    </script>
+
+  </body>
+
+</html>

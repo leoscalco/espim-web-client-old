@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+	<meta charset="utf-8">
+	<title>ESPIM</title>
+	<link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+	<style>
+		body {
+			/*
+			-moz-transform: scale(0.2, 0.2);
+			zoom: 0.2;
+			zoom: 20%;
+			*/
+			/* position: absolute !important; */
+		}
+
+		#background {
+			background-size: 80px 80px;
+			background-image: linear-gradient(to right, #EEEEEE 1px, transparent 1px), linear-gradient(to bottom, #EEEEEE 1px, transparent 1px);
+			position: absolute !important;
+		}
+
+		#myCanvas {
+			position: absolute !important;
+		}
+
+		#panel-group {
+			position: absolute !important;
+			background:transparent;
+		}
+
+		.panel {
+			width: 300px;
+			height: auto;
+			position: absolute !important;
+		}
+
+		.panel-body .row {
+			padding-right: 10px;
+			padding-left: 10px;
+		}
+
+		.panel-body div[class^='col'], .panel-body div[class*=' col'] {
+			padding-right: 5px;
+			padding-left: 5px;
+		}
+
+		.colorHide {
+			color:#EEEEEE!important;
+		}
+		.colorHide:link {
+			color:#EEEEEE!important;
+		}
+		.colorHide:visited {
+			color:#EEEEEE!important;
+		}
+		.colorHide:hover {
+			color:#EEEEEE!important;
+		}
+		.colorHide:active {
+			color:#EEEEEE!important;
+		}
+		.getMedia {
+			margin-bottom:15px;
+		}
+
+		.tooltip-inner {
+			max-width: 300px;
+			width:300px;
+		}
+
+		label.labelNext {
+			font-size:10px!important;
+		}
+
+		h3, h4 {
+			font-weight: bold;
+		}
+	</style>
+</head>
+
+<body>
+	<nav class="navbar navbar-default navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">ESPIM</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					<li><a href="#" id="zoom-out"><span class="glyphicon glyphicon-zoom-out" aria-hidden="true"></span></a></li>
+					<li><a href="#" id="zoom-in"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a></li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></a>
+						<ul class="dropdown-menu" role="menu">
+							<li><a class="addBlock" id="addText" href="#">Questão aberta</a></li>
+							<li><a class="addBlock" id="addMSG" href="#">Mensagem</a></li>
+							<li><a class="addBlock" id="addMult" href="#">Questão múltipla escolha</a></li>
+							<li><a class="addBlock" id="addCheck" href="#">Questão múltiplas opções</a></li>
+							<li><a class="addBlock" id="addTask" href="#">Tarefa</a></li>
+							<li><a class="addBlock" id="addSendMedia" href="#">Enviar Mídia <span class="glyphicon glyphicon-question-sign pull-right" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="'Enviar Mídias' serve para programar o envio de vídeos, imagens e/ou áudios junto as intervenções. Essas mídias serão acessadas pelo usuário final (paciente utilizando o aplicativo móvel)."></span></a></li>
+							<li><a class="addBlock" id="addGetMedia" href="#">Receber Mídia <span class="glyphicon glyphicon-question-sign pull-right" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="'Receber Mídia' serve para requisitar ao usuário final (paciente utilizando o aplicativo móvel) o envio de vídeos, imagens e/ou áudios."></span></a></li>
+						</ul>
+					</li>
+					<li><a id="finish" href="#">Finalizar</a></li>
+					<li><a href="#" data-toggle="modal" data-target=".modal-help">Ajuda</a></li>
+				</ul>
+			</div><!--/.nav-collapse -->
+		</div>
+	</nav>
+	<!-- HIDE -->
+	<div class="hidden">
+
+		<div id="blockSendMedia">
+			<div class="panel panel-info panelSendMedia" aria-hidden="true" data-toggle="tooltip" data-placement="top">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<strong class="blockNumber"></strong> - Enviar mídia</a> <a href="#" class="blockStart"><span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span>
+						<a href="#" class="removeBlock"><span class="glyphicon glyphicon-trash pull-right" aria-hidden="true"></span></a>
+					</h3>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="form-group">
+								<div class="checkbox">
+									<label><input type="checkbox" class="checkObligatory" value="">Obrigatório</label>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="form-group">
+								<textarea class="form-control" placeholder="Mensagem" rows="4"></textarea>
+							</div>
+						</div>
+						<div class="col-xs-12">
+							<div class="form-group">
+								<button class="btn btn-primary getMedia pull-left"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span></button>
+								<input type="hidden" class="mediaUrl"/ >
+								<input type="hidden" class="mediaType"/ >
+							</div>
+						</div>
+						<div class="col-xs-offset-8 col-xs-4">
+							<div class="form-group">
+								<label class="labelNext">Próxima intervenção</label>
+								<select class="form-control selectBlock">
+									<option value=''></option>
+									<option value='0'>FIM</option>
+									<option value='-1'>CANCELAR</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="blockGetMedia">
+			<div class="panel panel-info panelGetMedia" aria-hidden="true" data-toggle="tooltip" data-placement="top">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<strong class="blockNumber"></strong> - Receber mídia <a href="#" class="blockStart"><span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span></a>
+						<a href="#" class="removeBlock"><span class="glyphicon glyphicon-trash pull-right" aria-hidden="true"></span></a>
+					</h3>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="form-group">
+								<div class="checkbox">
+									<label><input type="checkbox" class="checkObligatory" value="">Obrigatório</label>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="form-group">
+								<textarea class="form-control" placeholder="Mensagem" rows="4"></textarea>
+							</div>
+						</div>
+						<div class="col-xs-12">
+							<div class="form-group">
+								<select class="form-control selectMedia">
+									<option value='image'>Imagem</option>
+									<option value='audio'>Áudio</option>
+									<option value='video'>Vídeo</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-xs-offset-8 col-xs-4">
+							<div class="form-group">
+								<label class="labelNext">Próxima intervenção</label>
+								<select class="form-control selectBlock">
+									<option value=''></option>
+									<option value='0'>FIM</option>
+									<option value='-1'>CANCELAR</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="blockText">
+			<div class="panel panel-info panelText" aria-hidden="true" data-toggle="tooltip" data-placement="top">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<strong class="blockNumber"></strong> - Questão aberta <a href="#" class="blockStart"><span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span></a>
+						<a href="#" class="removeBlock"><span class="glyphicon glyphicon-trash pull-right" aria-hidden="true"></span></a>
+					</h3>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="form-group">
+								<div class="checkbox">
+									<label><input type="checkbox" class="checkObligatory" value="">Obrigatório</label>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="form-group">
+								<textarea class="form-control" placeholder="Digite a questão" rows="4"></textarea>
+							</div>
+						</div>
+						<div class="col-xs-offset-8 col-xs-4">
+							<div class="form-group">
+								<label class="labelNext">Próxima intervenção</label>
+								<select class="form-control selectBlock">
+									<option value=''></option>
+									<option value='0'>FIM</option>
+									<option value='-1'>CANCELAR</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="blockMSG">
+			<div class="panel panel-info panelMSG" aria-hidden="true" data-toggle="tooltip" data-placement="top">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<strong class="blockNumber"></strong> - Mensagem <a href="#" class="blockStart"><span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span></a>
+						<a href="#" class="removeBlock"><span class="glyphicon glyphicon-trash pull-right" aria-hidden="true"></span></a>
+					</h3>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="form-group">
+								<textarea class="form-control" placeholder="Digite a mensagem" rows="4"></textarea>
+							</div>
+						</div>
+						<div class="col-xs-offset-8 col-xs-4">
+							<div class="form-group">
+								<label class="labelNext">Próxima intervenção</label>
+								<select class="form-control selectBlock">
+									<option value=''></option>
+									<option value='0'>FIM</option>
+									<option value='-1'>CANCELAR</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="blockMult">
+			<div class="panel panel-info panelMult" aria-hidden="true" data-toggle="tooltip" data-placement="top">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<strong class="blockNumber"></strong> - Questão múltipla escolha <a href="#" class="blockStart"><span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span></a>
+						<a href="#" class="removeBlock"><span class="glyphicon glyphicon-trash pull-right" aria-hidden="true"></span></a>
+					</h3>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="form-group">
+								<div class="checkbox">
+									<label><input class="checkObligatory" type="checkbox" value="">Obrigatório</label>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="form-group">
+								<textarea class="form-control question" placeholder="Digite a questão" rows="2"></textarea>
+							</div>
+						</div>
+					</div>
+					<div class="alternatives">
+						<div class="row alternative">
+							<div class="col-xs-7">
+								<div class="form-group">
+									<label class="labelNext">&nbsp;<br/>&nbsp;</label>
+									<textarea class="form-control" placeholder="Digite a alternativa" rows="1"></textarea>
+								</div>
+							</div>
+							<div class="col-xs-3">
+								<div class="form-group">
+									<label class="labelNext">Próxima intervenção</label>
+									<select class="form-control selectBlock">
+										<option value=''></option>
+										<option value='0'>FIM</option>
+										<option value='-1'>CANCELAR</option>
+									</select>
+								</div>
+							</div>
+							<div class="col-xs-2">
+								<div class="form-group">
+									<button class="btn btn-link removeAlternative colorHide"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
+								</div>
+							</div>
+						</div>
+						<div class="row alternative">
+							<div class="col-xs-7">
+								<div class="form-group">
+									<label class="labelNext">&nbsp;<br/>&nbsp;</label>
+									<textarea class="form-control" placeholder="Digite a alternativa" rows="1"></textarea>
+								</div>
+							</div>
+							<div class="col-xs-3">
+								<div class="form-group">
+									<label class="labelNext">Próxima intervenção</label>
+									<select class="form-control selectBlock">
+										<option value=''></option>
+										<option value='0'>FIM</option>
+										<option value='-1'>CANCELAR</option>
+									</select>
+								</div>
+							</div>
+							<div class="col-xs-2">
+								<div class="form-group">
+									<button class="btn btn-link removeAlternative colorHide"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-2 col-xs-offset-10">
+							<div class="form-group">
+								<button class="btn btn-link addAlternative"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="blockCheck">
+			<div class="panel panel-info panelCheck" aria-hidden="true" data-toggle="tooltip" data-placement="top">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<strong class="blockNumber"></strong> - Questão múltiplas opções <a href="#" class="blockStart"><span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span></a>
+						<a href="#" class="removeBlock"><span class="glyphicon glyphicon-trash pull-right" aria-hidden="true"></span></a>
+					</h3>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="form-group">
+								<div class="checkbox">
+									<label><input type="checkbox" class="checkObligatory" value="">Obrigatório</label>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="form-group">
+								<textarea class="form-control question" placeholder="Digite a questão" rows="2"></textarea>
+							</div>
+						</div>
+					</div>
+					<div class="alternatives">
+						<div class="row alternative">
+							<div class="col-xs-10">
+								<div class="form-group">
+									<textarea class="form-control" placeholder="Digite a opção" rows="1"></textarea>
+								</div>
+							</div>
+							<div class="col-xs-2">
+								<div class="form-group">
+									<button class="btn btn-link removeAlternative colorHide"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
+								</div>
+							</div>
+						</div>
+						<div class="row alternative">
+							<div class="col-xs-10">
+								<div class="form-group">
+									<textarea class="form-control" placeholder="Digite a opção" rows="1"></textarea>
+								</div>
+							</div>
+							<div class="col-xs-2">
+								<div class="form-group">
+									<button class="btn btn-link removeAlternative colorHide"><span class="glyphicon glyphicon-minus" aria-hidden="true"></span></button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-2 col-xs-offset-10">
+							<div class="form-group">
+								<button class="btn btn-link addAlternative"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-3 col-xs-offset-9">
+							<div class="form-group">
+								<label class="labelNext">Próxima intervenção</label>
+								<select class="form-control selectBlock">
+									<option value=''></option>
+									<option value='0'>FIM</option>
+									<option value='-1'>CANCELAR</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="blockTask">
+			<div class="panel panel-info panelTask" aria-hidden="true" data-toggle="tooltip" data-placement="top">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<strong class="blockNumber"></strong> - Tarefa <a href="#" class="blockStart"><span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span></a>
+						<a href="#" class="removeBlock"><span class="glyphicon glyphicon-trash pull-right" aria-hidden="true"></span></a>
+					</h3>
+				</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="form-group">
+								<div class="checkbox">
+									<label><input type="checkbox" class="checkObligatory" value="">Obrigatório</label>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="form-group">
+								<textarea class="form-control question" placeholder="Digite a descrição da tarefa" rows="4"></textarea>
+							</div>
+						</div>
+						<div class="col-xs-12">
+							<div class="form-group">
+								<textarea class="form-control app" placeholder="Digite a URL (que aparece no Google Play) do aplicativo" rows="2"></textarea>
+							</div>
+						</div>
+						<div class="col-xs-offset-8 col-xs-4">
+							<div class="form-group">
+								<label class="labelNext">Próxima intervenção</label>
+								<select class="form-control selectBlock">
+									<option value=''></option>
+									<option value='0'>FIM</option>
+									<option value='-1'>CANCELAR</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<!-- HIDE -->
+	<div id="background">
+		<canvas id="myCanvas">
+		</canvas>
+		<div id="panel-group">
+			<!-- div para remover o bloco index 0 -->
+			<div class="panel panel-info hidden"></div>
+		</div>
+	</div>
+
+	<!-- Modal -->
+	<div id="endModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="gridModalLabel">Informações do disparo da intervenção</h4>
+				</div>
+				<div class="modal-body">
+					<div class="container-fluid bd-example-row">
+						<div class="row">
+							<div class="col-xs-12">
+								<div class="form-group">
+									<label>Nome da intervenção:</label>
+									<input type="text" class="form-control"/>
+								</div>
+							</div>
+							<div class="col-xs-4">
+								<div class="form-group">
+									<label>Hora do disparo:</label>
+									<input type="time" class="form-control"/>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-xs-12">
+								<div class="checkbox">
+									<label class="checkbox-inline"><input type="checkbox" value="" checked="checked">SEG</label>
+									<label class="checkbox-inline"><input type="checkbox" value="" checked="checked">TER</label>
+									<label class="checkbox-inline"><input type="checkbox" value="" checked="checked">QUA</label>
+									<label class="checkbox-inline"><input type="checkbox" value="" checked="checked">QUI</label>
+									<label class="checkbox-inline"><input type="checkbox" value="" checked="checked">SEX</label>
+									<label class="checkbox-inline"><input type="checkbox" value="" checked="checked">SAB</label>
+									<label class="checkbox-inline"><input type="checkbox" value="" checked="checked">DOM</label>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Voltar</button>
+					<button type="button" id="send" class="btn btn-primary">Enviar</button>
+				</div>
+				<div id="jsonTest">
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade modal-help" tabindex="-1" role="dialog" aria-labelledby="modal-help" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h3 class="modal-title" id="myModalLabel">Ajuda</h3>
+				</div>
+				<div class="modal-body">
+					<h4>Como criar uma intervenção?</h4>
+
+					Para criar uma intervenção basta clicar no ícone <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> no menu e esolher a intervenção desejada.
+
+					<h4>Como configurar a sequência das intervenções?</h4>
+
+					O evento possui uma sequência na qual vária intervenções são executadas uma após a outra. Como padrão, a cada intervenção criada ela será designada como sendo a próxima da última criada. Para editar esta sequência basta selecionar o campo "Próxima intervenção" e escolher. Essa seleção possui outras 2 alternativas: FIM e CANCELAR. Essas 2 alternativas serão detalhadas abaixo.
+
+					<h4>Como criar uma sequência diferente de acordo com a resposta do usuário?</h4>
+
+					<p>Apenas as "Questão múltipla escolha" podem ser configuradas com condições. Cada alternativa pode levar a uma sequência de intervenções específicas.</p>
+
+					<h4>O que é FIM?</h4>
+
+					<p>A marcação de FIM representa o final do evento. Caso o usuário final (paciente utilizando o aplicativo móvel) chegue até este ponto, o evento será dado como concluído.</p>
+
+					<h4>O que é CANCELAR?</h4>
+
+					<p>A marcação de CANCELAR representa o final do evento, porém se o usuário final (paciente utilizando o aplicativo móvel) chegar até este ponto, o evento será dado como não concluído. Uma nova tentativa de disparo será enviada.</p>
+
+					<h4>Como seleciono uma intervenção para ser a primeira da sequência?</h4>
+
+					<p>Como padrão, a primeira intervenção da sequência é a primeira a ser criada. Caso deseje mudar qual será a primeira intervenção, basta clicar na estrela do lado direito do nome da intervenção. A intervenção marcada como primeira ficará com a estrela preenchida e com a aba na cor azul.</p>
+
+					<h4>Como melhorar a visibilidade do evento?</h4>
+
+					Conforme a criação de várias intervenções, a visibilidade do evento completo começará a ser prejudicada. Para facilitar a visualização basta clicar nos botões de zoom no menu superior conforme a necessidade.
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="external/jquery/jquery.js"></script>
+	<script src="jquery-ui.js"></script>
+	<script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+
+	<script>
+
+		window.moveTo(0,0);
+		window.resizeTo(screen.width,screen.height);
+
+		var first = 0;
+
+		var blockCount = 0;
+
+		var blockText = '';
+
+		var draggableOpts = {
+			scroll: true,
+			cursor: "move"
+		};
+
+		var c = document.getElementById("myCanvas");
+		var ctx = c.getContext("2d");
+
+		var zoom = 1;
+
+		var documentWidth;
+		var documentHeight;
+
+		var windowWidth;
+		var windowHeight;
+
+		var halfWindowWidth;
+		var halfWindowHeight;
+
+		var halfScrollWidth;
+		var halfScrollHeight;
+
+		$(document).ready(function(){
+
+			resize();
+
+			$(document).on( "click", ".addBlock", function(e) {
+
+				e.preventDefault();
+
+				blockCount++;
+
+				if ($(this).attr('id') == "addGetMedia") {
+					var newBlock = $("#blockGetMedia").children().clone().draggable(draggableOpts);
+				} else if ($(this).attr('id') == "addSendMedia") {
+					var newBlock = $("#blockSendMedia").children().clone().draggable(draggableOpts);
+				} else if ($(this).attr('id') == "addText") {
+					var newBlock = $("#blockText").children().clone().draggable(draggableOpts);
+				} else if ($(this).attr('id') == "addMSG") {
+					var newBlock = $("#blockMSG").children().clone().draggable(draggableOpts);
+				} else if ($(this).attr('id') == "addMult") {
+					var newBlock = $("#blockMult").children().clone().draggable(draggableOpts);
+				} else if ($(this).attr('id') == "addCheck") {
+					var newBlock = $("#blockCheck").children().clone().draggable(draggableOpts);
+				} else if ($(this).attr('id') == "addTask") {
+					var newBlock = $("#blockTask").children().clone().draggable(draggableOpts);
+				}
+
+				$("#panel-group").append(newBlock);
+				newBlock.css('left',(halfScrollWidth-($(newBlock).width())/2)+'px');
+				newBlock.css('top',(halfScrollHeight-($(newBlock).height())/2)+'px');
+				// newBlock.attr('id', 'blockNumber-'+blockCount);
+				// pega index
+				currentlyBlock = newBlock.index();
+				newBlock.find('.blockNumber').html(currentlyBlock);
+
+				if (currentlyBlock == 1) {
+					newBlock.removeClass("panel-info");
+					newBlock.addClass("panel-primary");
+					newBlock.find(".panel-title .glyphicon").removeClass("glyphicon-star-empty");
+					newBlock.find(".panel-title .glyphicon").addClass("glyphicon-star");
+					first = 1;
+				}
+
+				refreshSelects();
+
+				// procura bloco anterior e ve se select é igual a null. se for liga ele neste q esta sendo criado
+				if (currentlyBlock>1) {
+					var lastBlock = currentlyBlock-1;
+					$('#panel-group .panel').eq(lastBlock).find("select.selectBlock").each(function(){
+						if($(this).val() == '') {
+							$(this).val(currentlyBlock);
+						}
+					});
+				}
+
+				refreshRotes();
+
+			});
+
+			$(document).on( "drag", ".panel", function( event, ui ) {
+				ui.position.top = Math.max(50, ui.position.top);
+				ui.position.left = Math.max(0, ui.position.left);
+
+				refreshRotes();
+			});
+
+			$(document).on( "change", "select.selectBlock", function( event, ui ) {
+				refreshRotes();
+
+				if ((this.value == "") || (this.value == null)) {
+					$(this).css("background-color","transparent");
+				}
+				else if (this.value == 0) {
+					$(this).css("background-color","#5cb85c");
+				} else if (this.value == -1) {
+					$(this).css("background-color","#f0ad4e");
+				} else {
+					$(this).css("background-color","transparent");
+				}
+			});
+
+			/*
+			function refreshBlocks() {
+				refreshRotes();
+			}
+			*/
+
+			function refreshSelects() {
+				var blocksLength = $('#panel-group .panel').length;
+				var i = 1;
+				var positionSelects = [];
+				var blocksOk = [];
+				var k = 0;
+
+				$("#panel-group .panel select.selectBlock").each(function(index){
+
+					positionSelects[index] = $(this).val();
+
+				});
+
+				//alert(positionSelects.toString());
+
+				$("#panel-group .panel select.selectBlock option[value!=''][value!='-1'][value!='0']").remove();
+
+				$('#panel-group .panel').each(function(index){
+					if ($(this).hasClass('hidden')) {
+						blocksOk[index] = 0;
+					} else {
+						blocksOk[index] = 1;
+					}
+					//k++;
+				});
+
+				$('#panel-group .panel').each(function(index){
+					//alert($(this).index());
+					if (!$(this).hasClass('hidden')) {
+						for (i=1;i<blocksLength;i++) {
+							if ((i != index) && (blocksOk[i] == 1)) {
+								$(this).find('select.selectBlock').append($('<option>', {
+									value: i,
+									text: i
+								}));
+							}
+						}
+					}
+				});
+
+				$("#panel-group .panel select.selectBlock").each(function(index){
+					$(this).val("");
+				});
+
+				$("#panel-group .panel select.selectBlock").each(function(index){
+					if ((positionSelects[index] == null) || (positionSelects[index] == "")) {
+
+						$(this).val("");
+
+					} else if ((positionSelects[index] == -1) || (positionSelects[index] == 0)) {
+
+						$(this).val(positionSelects[index]);
+
+					} else if (blocksOk[positionSelects[index]] == 1) {
+
+						$(this).val(positionSelects[index]);
+
+					} else {
+
+						$(this).val("");
+
+					}
+				});
+			}
+
+			function refreshRotes() {
+				var blocksLength = $('#panel-group .panel').length;
+				var i = 0;
+
+				resize();
+
+				ctx.strokeStyle = '#333333';
+				ctx.beginPath();
+				//ctx.scale(1, 1)
+				ctx.setLineDash([8,4]);
+
+
+
+
+
+				var headlen = 10;
+				var arrowSpace = headlen+5;
+
+				// orimizar (salvar painel e nao precisar procurar de novo com closest)
+				$("#panel-group .panel").each(function(){
+					var qtdSelects = $(this).find("select.selectBlock").length;
+					var equalSelects = 1;
+					var currentlySelect;
+					var firstSelect;
+					var k = 0;
+					$(this).find("select.selectBlock").each(function(){
+						if (k == 0) {
+							firstSelect = $(this).val();
+						}
+						currentlySelect = $(this).val();
+						if (firstSelect != currentlySelect) {
+							equalSelects = 0;
+							return false;
+						}
+						k++;
+					});
+
+					$(this).find("select.selectBlock").each(function(){
+
+						var originSelect = $(this);
+
+						var selectValue = originSelect.val();
+						if ((selectValue != '') && (selectValue != '-1') && (selectValue != '0')) {
+
+							var originBlock = originSelect.closest(".panel");
+							if (equalSelects == 1) {
+								var originFormGroup = originBlock;
+							} else if (equalSelects == 0) {
+								var originFormGroup = originSelect.parent();
+							}
+
+							var originOffsetBlock = originBlock.offset();
+							var originWidthBlock = originBlock.width();
+
+							var originOffset = originFormGroup.offset();
+							var originWidth = originFormGroup.width();
+							var originHeight = originFormGroup.height();
+
+
+							var destinyBlock = $('#panel-group .panel').eq(selectValue);
+
+							var destinyOffset = destinyBlock.offset();
+							var destinyWidth = destinyBlock.width();
+							var destinyHeight = destinyBlock.height();
+
+
+							var origin = [];
+
+							origin[0] = [];
+							//origin[0][0] = originOffset.left;
+							//origin[0][0] = originOffsetBlock.left;
+							origin[0][0] = originOffsetBlock.left - arrowSpace;
+							origin[0][1] = originOffset.top + originHeight / 2;
+
+							origin[1] = [];
+							//origin[1][0] = originOffset.left + originWidth;
+							//origin[1][0] = originOffsetBlock.left + originWidthBlock;
+							origin[1][0] = originOffsetBlock.left + originWidthBlock + arrowSpace;
+							origin[1][1] = originOffset.top + originHeight / 2;
+
+
+
+							var destiny = [];
+
+							destiny[0] = [];
+							destiny[0][0] = destinyOffset.left + destinyWidth / 2;
+							//destiny[0][1] = destinyOffset.top;
+							destiny[0][1] = destinyOffset.top - arrowSpace;
+
+							destiny[1] = [];
+							//destiny[1][0] = destinyOffset.left + destinyWidth;
+							destiny[1][0] = destinyOffset.left + destinyWidth + arrowSpace;
+							destiny[1][1] = destinyOffset.top + destinyHeight / 2;
+
+							destiny[2] = [];
+							destiny[2][0] = destinyOffset.left + destinyWidth / 2;
+							//destiny[2][1] = destinyOffset.top + destinyHeight;
+							destiny[2][1] = destinyOffset.top + destinyHeight + arrowSpace;
+
+							destiny[3] = [];
+							//destiny[3][0] = destinyOffset.left;
+							destiny[3][0] = destinyOffset.left - arrowSpace;
+							destiny[3][1] = destinyOffset.top + destinyHeight / 2;
+
+							var minDestinyN = 0;
+							var minOriginN = 0;
+							var minHip = 0;
+							for (var j = 0;j<2;j++) {
+								for (var i = 0;i<4;i++) {
+
+									var hip = Math.abs(Math.sqrt(Math.pow(Math.abs(destiny[i][0]-origin[j][0]),2)+Math.pow(Math.abs(destiny[i][1]-origin[j][1]),2)));
+
+									if (((i == 0) && (j == 0)) || (hip < minHip)) {
+										minHip = hip;
+										minDestinyN = i;
+										minOriginN = j;
+									}
+
+								}
+							}
+
+							// começo da linha
+							ctx.moveTo(origin[minOriginN][0], origin[minOriginN][1]);
+
+							// angulo para desenhar setas
+							var angle = Math.atan2(destiny[minDestinyN][1]-origin[minOriginN][1],destiny[minDestinyN][0]-origin[minOriginN][0]);
+
+							// primeira seta
+							ctx.lineTo(origin[minOriginN][0]-headlen*Math.cos(angle-Math.PI/6),origin[minOriginN][1]-headlen*Math.sin(angle-Math.PI/6));
+							ctx.moveTo(origin[minOriginN][0], origin[minOriginN][1]);
+							ctx.lineTo(origin[minOriginN][0]-headlen*Math.cos(angle+Math.PI/6),origin[minOriginN][1]-headlen*Math.sin(angle+Math.PI/6));
+							ctx.moveTo(origin[minOriginN][0], origin[minOriginN][1]);
+
+							// fim da linha
+							ctx.lineTo(destiny[minDestinyN][0], destiny[minDestinyN][1]);
+
+							// segunda seta
+							ctx.lineTo(destiny[minDestinyN][0]-headlen*Math.cos(angle-Math.PI/6),destiny[minDestinyN][1]-headlen*Math.sin(angle-Math.PI/6));
+							ctx.moveTo(destiny[minDestinyN][0], destiny[minDestinyN][1]);
+							ctx.lineTo(destiny[minDestinyN][0]-headlen*Math.cos(angle+Math.PI/6),destiny[minDestinyN][1]-headlen*Math.sin(angle+Math.PI/6));
+
+
+						}
+						if (equalSelects == 1) {
+							return false;
+						}
+					});
+				});
+ctx.lineWidth = 1;
+ctx.stroke();
+}
+
+$(window).resize(function() {
+	refreshCreateArea();
+});
+
+function resize() {
+	refreshMap();
+	refreshCreateArea();
+}
+
+function refreshMap() {
+	documentWidth = $(document).width();
+	documentHeight = $(document).height();
+
+	ctx.canvas.width  = documentWidth;
+	ctx.canvas.height = documentHeight;
+
+	$('#background').width(documentWidth/zoom);
+	$('#background').height(documentHeight/zoom);
+}
+
+function refreshCreateArea() {
+	windowWidth = $(window).width();
+	windowHeight = $(window).height();
+
+	halfWindowWidth = windowWidth/2;
+	halfWindowHeight = windowHeight/2;
+
+	halfScrollWidth = $(document).scrollLeft() + halfWindowWidth;
+	halfScrollHeight = $(document).scrollTop() + halfWindowHeight;
+}
+
+$(document).scroll(function() {
+	refreshCreateArea();
+});
+
+$(document).on( "click", "#zoom-in", function(e) {
+
+	e.preventDefault();
+
+	if (zoom < 1) {
+		$("#zoom-out").css('opacity',1);
+		zoom = zoom + 0.1;
+		$('#background').animate({ 'zoom': zoom }, 200);
+
+		resize();
+		refreshRotes();
+	}
+});
+
+$(document).on( "click", "#zoom-out", function(e) {
+
+	e.preventDefault();
+
+	if (zoom > 0.6) {
+		$("#zoom-in").css('opacity',1);
+		zoom = zoom - 0.1;
+		$('#background').animate({ 'zoom': zoom }, 200);
+
+		resize();
+		refreshRotes();
+	}
+});
+
+$(document).on( "click", ".addAlternative", function(e) {
+
+	e.preventDefault();
+	var alternativeLength = $(this).closest(".panel-body").find(".alternative").length;
+
+	//var newAlternative = $("#blockMult .panel .panel-body .alternatives .alternative").first().clone();
+
+	var newAlternative = $(this).closest(".panel-body").find(".alternative").first().clone();
+
+	var qtdSelects = $(this).closest(".panel-body").find("select.selectBlock").length;
+	var equalSelects = 1;
+	var currentlySelect;
+	var firstSelect;
+	var k = 0;
+	$(this).closest(".panel-body").find("select.selectBlock").each(function(){
+		if (k == 0) {
+			firstSelect = $(this).val();
+		}
+		currentlySelect = $(this).val();
+		if (firstSelect != currentlySelect) {
+			equalSelects = 0;
+			return false;
+		}
+		k++;
+	});
+
+	if (equalSelects == 0) {
+		newAlternative.find("select.selectBlock").val('');
+	} else if (equalSelects == 1) {
+		newAlternative.find("select.selectBlock").val(firstSelect);
+	}
+
+	//newAlternative.removeAttr('value');
+
+	newAlternative.find("textarea").val('');
+
+	$(this).closest(".panel-body").find(".alternatives").append(newAlternative);
+
+	if (alternativeLength >= 2) {
+		$(this).closest(".panel-body").find(".removeAlternative").removeClass("colorHide");
+	}
+});
+
+$(document).on( "click", ".removeAlternative", function(e) {
+
+	e.preventDefault();
+
+	var alternativeLength = $(this).closest(".alternatives").find(".alternative").length;
+
+	if (alternativeLength > 2) {
+
+		if (alternativeLength == 3) {
+			$(this).closest(".alternatives").find(".removeAlternative").addClass("colorHide");
+		}
+
+		$(this).closest(".alternative").remove();
+
+		refreshRotes();
+	}
+});
+
+$(document).on( "click", "#finish", function(e) {
+
+	e.preventDefault();
+
+	if (confirm('Tem certeza que gostaria de finalizar o evento?')) {
+
+		if (first == 0) {
+			alert("O evento não possui um início. Uma intervenção deve ser marcada como a primeira da sequência. Clique no ícone de uma estrela para tornar a intervenção como a primeira do evento.");
+			return false;
+		}
+
+		var hasNull = 0;
+		var hasEnd = 0;
+		var listNexts = [];
+		var listBlocks = [];
+		var listInterventionsNotHaveNext = [];
+
+		var k = 0;
+		var i = 0;
+		var j = 0;
+		$("#panel-group select.selectBlock").each(function(){
+			if ($(this).val() == '') {
+				listInterventionsNotHaveNext[k] = $(this).closest(".panel").index();
+				hasNull++;
+				k++;
+			}
+			if ($(this).val() == 0) {
+				hasEnd++;
+			}
+
+			// conta todos os blocks e next para checar se todos possuem ligações
+			if (($(this).val() != '') && ($(this).val() != -1) && ($(this).val() != 0)) {
+				listNexts[i] = $(this).val();
+				i++;
+			}
+			var numBlockOfList = $(this).closest(".panel").index();
+			if (first != numBlockOfList) {
+				listBlocks[j] = numBlockOfList;
+				j++;
+			}
+		});
+
+		var uniqueListInterventionsNotHaveNext = [];
+		$.each(listInterventionsNotHaveNext, function(i, el){
+			if($.inArray(el, uniqueListInterventionsNotHaveNext) === -1) uniqueListInterventionsNotHaveNext.push(el);
+		});
+
+		if (hasNull > 0) {
+			alert("Por favor preencha todos os campos 'Próxima intervenção' nas seguintes intervenções: "+uniqueListInterventionsNotHaveNext.toString());
+			return false;
+		}
+		if (hasEnd == 0) {
+			alert("O evento não possui um fim.");
+			return false;
+		}
+
+    	// existe mais q um grafo? caso sim mostra mensagem
+
+    	var uniqueListNexts = [];
+    	$.each(listNexts, function(i, el){
+    		if($.inArray(el, uniqueListNexts) === -1) uniqueListNexts.push(el);
+    	});
+
+    	var uniqueListBlocks = [];
+    	$.each(listBlocks, function(i, el){
+    		if($.inArray(el, uniqueListBlocks) === -1) uniqueListBlocks.push(el);
+    	});
+
+    	function superbag(sup, sub) {
+    		sup.sort();
+    		sub.sort();
+    		var i, j;
+    		for (i=0,j=0; i<sup.length && j<sub.length;) {
+    			if (sup[i] < sub[j]) {
+    				++i;
+    			} else if (sup[i] == sub[j]) {
+    				++i; ++j;
+    			} else {
+            // sub[j] not in sup, so sub not subbag
+            return false;
+        }
+    }
+    // make sure there are no elements left in sub
+    return j == sub.length;
+}
+
+$("#debug").html("");
+$("#debug").append(uniqueListNexts.toString()+"<br/>"+uniqueListBlocks.toString());
+
+if(superbag(uniqueListNexts, uniqueListBlocks)) {
+	// OK
+} else {
+	alert("Uma ou mais intervenções não podem ser acessadas pois estão fora da sequência.");
+	return false;
+}
+
+    	// existe loop?
+
+    	// $("#endModal").modal('show');
+    	sendJSON();
+
+    } else {
+    }
+});
+
+$(document).on( "click", ".blockStart", function(e) {
+
+	e.preventDefault();
+
+	var currentlyBlock = $(this).closest(".panel");
+	var currentlyIndex = currentlyBlock.index();
+	if (currentlyIndex != first) {
+
+		$(".panel").removeClass("panel-primary");
+		$(".panel").addClass("panel-info");
+		$(".panel").find(".panel-title .glyphicon").removeClass("glyphicon-star");
+		$(".panel").find(".panel-title .glyphicon").addClass("glyphicon-star-empty");
+
+		currentlyBlock.removeClass("panel-info");
+		currentlyBlock.addClass("panel-primary");
+		currentlyBlock.find(".panel-title .glyphicon").removeClass("glyphicon-star-empty");
+		currentlyBlock.find(".panel-title .glyphicon").addClass("glyphicon-star");
+
+		first = currentlyIndex;
+	}
+});
+
+$(document).on( "click", ".removeBlock", function(e) {
+
+	e.preventDefault();
+
+	if (confirm('Tem certeza que deseja remover esta intervenção?')) {
+
+		var currentlyBlock = $(this).closest(".panel");
+		currentlyBlock.empty();
+		currentlyBlock.addClass("hidden");
+		currentlyBlock.tooltip('hide');
+		var currentlyIndex = currentlyBlock.index();
+		if (currentlyIndex == first) {
+			first = 0;
+		}
+		refreshSelects();
+		refreshRotes();
+
+	}
+});
+
+$("#checkRepeat").change(function() {
+	if(this.checked) {
+		$("#repeatOptions").show();
+	} else {
+		$("#repeatOptions").hide();
+	}
+});
+
+
+// $(document).on( "click", "#send", function(e) {
+	function sendJSON() {
+
+
+
+
+
+
+		var jsonString = new Object();
+		jsonString['_embedded'] = new Object();
+		jsonString['_embedded']['empty-interventions'] = [];
+		jsonString['_embedded']['task-interventions'] = [];
+		jsonString['_embedded']['question-interventions'] = [];
+
+
+
+		var i = 0;
+		var i_e = 0;
+		var i_t = 0;
+		var i_q = 0;
+
+		$('#panel-group .panel').each(function(){
+			if (!$(this).hasClass('hidden')) {
+
+				if ($(this).hasClass('panelSendMedia')) {
+
+					jsonString['_embedded']['empty-interventions'][i_e] = new Object();
+					jsonString['_embedded']['empty-interventions'][i_e]['type'] = "media-presentation";
+					jsonString['_embedded']['empty-interventions'][i_e]['statement'] = $(this).find('textarea').val();
+
+					jsonString['_embedded']['empty-interventions'][i_e]['mediaType'] = $(this).find('.mediaType').val();
+					jsonString['_embedded']['empty-interventions'][i_e]['url'] = $(this).find('.mediaUrl').val();
+
+					var thisBlockNumber = parseInt($(this).find('.blockNumber').html());
+					jsonString['_embedded']['empty-interventions'][i_e]['orderPosition'] = thisBlockNumber;
+					if (thisBlockNumber == first) {
+						jsonString['_embedded']['empty-interventions'][i_e]['first'] = true;
+					} else {
+						jsonString['_embedded']['empty-interventions'][i_e]['first'] = false;
+					}
+					jsonString['_embedded']['empty-interventions'][i_e]['next'] = $(this).find('select.selectBlock').val();
+					jsonString['_embedded']['empty-interventions'][i_e]['obligatory'] = false;
+
+					i++;
+					i_e++;
+
+				} else if ($(this).hasClass('panelGetMedia')) {
+
+					jsonString['_embedded']['empty-interventions'][i_e] = new Object();
+					jsonString['_embedded']['empty-interventions'][i_e]['type'] = "media-intervention";
+					jsonString['_embedded']['empty-interventions'][i_e]['statement'] = $(this).find('textarea').val();
+
+					jsonString['_embedded']['empty-interventions'][i_e]['mediaType'] = $(this).find('select.selectMedia option:selected').val();
+
+					var thisBlockNumber = parseInt($(this).find('.blockNumber').html());
+					jsonString['_embedded']['empty-interventions'][i_e]['orderPosition'] = thisBlockNumber;
+					if (thisBlockNumber == first) {
+						jsonString['_embedded']['empty-interventions'][i_e]['first'] = true;
+					} else {
+						jsonString['_embedded']['empty-interventions'][i_e]['first'] = false;
+					}
+					jsonString['_embedded']['empty-interventions'][i_e]['next'] = $(this).find('select.selectBlock').val();
+					jsonString['_embedded']['empty-interventions'][i_e]['obligatory'] = false;
+
+					i++;
+					i_e++;
+
+				} else if ($(this).hasClass('panelMSG')) {
+
+					jsonString['_embedded']['empty-interventions'][i_e] = new Object();
+					jsonString['_embedded']['empty-interventions'][i_e]['type'] = "empty";
+					jsonString['_embedded']['empty-interventions'][i_e]['statement'] = $(this).find('textarea').val();
+					var thisBlockNumber = parseInt($(this).find('.blockNumber').html());
+					jsonString['_embedded']['empty-interventions'][i_e]['orderPosition'] = thisBlockNumber;
+					if (thisBlockNumber == first) {
+						jsonString['_embedded']['empty-interventions'][i_e]['first'] = true;
+					} else {
+						jsonString['_embedded']['empty-interventions'][i_e]['first'] = false;
+					}
+					jsonString['_embedded']['empty-interventions'][i_e]['next'] = $(this).find('select.selectBlock').val();
+					jsonString['_embedded']['empty-interventions'][i_e]['obligatory'] = false;
+
+					i++;
+					i_e++;
+
+				} else if ($(this).hasClass('panelTask')) {
+
+					jsonString['_embedded']['task-interventions'][i_t] = new Object();
+					jsonString['_embedded']['task-interventions'][i_t]['type'] = "task";
+					jsonString['_embedded']['task-interventions'][i_t]['statement'] = $(this).find('textarea.question').val();
+					var thisBlockNumber = parseInt($(this).find('.blockNumber').html());
+					jsonString['_embedded']['task-interventions'][i_t]['orderPosition'] = thisBlockNumber;
+					if (thisBlockNumber == first) {
+						jsonString['_embedded']['task-interventions'][i_t]['first'] = true;
+					} else {
+						jsonString['_embedded']['task-interventions'][i_t]['first'] = false;
+					}
+					jsonString['_embedded']['task-interventions'][i_t]['next'] = $(this).find('select.selectBlock').val();
+					if ($(this).find('input.checkObligatory').is(':checked')) {
+						jsonString['_embedded']['task-interventions'][i_t]['obligatory'] = true;
+					} else {
+						jsonString['_embedded']['task-interventions'][i_t]['obligatory'] = false;
+					}
+					jsonString['_embedded']['task-interventions'][i_t]['appPackage'] = $(this).find('textarea.app').val();
+
+					i++;
+					i_t++;
+
+				} else if ($(this).hasClass('panelMult')) {
+
+					jsonString['_embedded']['question-interventions'][i_q] = new Object();
+					jsonString['_embedded']['question-interventions'][i_q]['type'] = "question";
+					jsonString['_embedded']['question-interventions'][i_q]['statement'] = $(this).find('textarea.question').val();
+					var thisBlockNumber = parseInt($(this).find('.blockNumber').html());
+					jsonString['_embedded']['question-interventions'][i_q]['orderPosition'] = thisBlockNumber;
+					if (thisBlockNumber == first) {
+						jsonString['_embedded']['question-interventions'][i_q]['first'] = true;
+					} else {
+						jsonString['_embedded']['question-interventions'][i_q]['first'] = false;
+					}
+					jsonString['_embedded']['question-interventions'][i_q]['next'] = 0;
+					if ($(this).find('input.checkObligatory').is(':checked')) {
+						jsonString['_embedded']['question-interventions'][i_q]['obligatory'] = true;
+					} else {
+						jsonString['_embedded']['question-interventions'][i_q]['obligatory'] = false;
+					}
+					jsonString['_embedded']['question-interventions'][i_q]['questionType'] = 1;
+
+					jsonString['_embedded']['question-interventions'][i_q]['complexConditions'] = [];
+
+
+
+
+					jsonString['_embedded']['question-interventions'][i_q]['options'] = [];
+					jsonString['_embedded']['question-interventions'][i_q]['conditions'] = new Object();
+
+					var j = 0;
+					$(this).find('.alternative').each(function(){
+
+						jsonString['_embedded']['question-interventions'][i_q]['options'][j] = $(this).find('textarea').val();
+						jsonString['_embedded']['question-interventions'][i_q]['conditions'][$(this).find('textarea').val()] = parseInt($(this).find('select.selectBlock').val());
+
+						j++;
+
+					});
+
+					i++;
+					i_q++;
+
+				} else if ($(this).hasClass('panelText')) {
+
+					jsonString['_embedded']['question-interventions'][i_q] = new Object();
+					jsonString['_embedded']['question-interventions'][i_q]['type'] = "question";
+					jsonString['_embedded']['question-interventions'][i_q]['statement'] = $(this).find('textarea').val();
+					var thisBlockNumber = parseInt($(this).find('.blockNumber').html());
+					jsonString['_embedded']['question-interventions'][i_q]['orderPosition'] = thisBlockNumber;
+					if (thisBlockNumber == first) {
+						jsonString['_embedded']['question-interventions'][i_q]['first'] = true;
+					} else {
+						jsonString['_embedded']['question-interventions'][i_q]['first'] = false;
+					}
+					jsonString['_embedded']['question-interventions'][i_q]['next'] = $(this).find('select.selectBlock').val();
+					if ($(this).find('input.checkObligatory').is(':checked')) {
+						jsonString['_embedded']['question-interventions'][i_q]['obligatory'] = true;
+					} else {
+						jsonString['_embedded']['question-interventions'][i_q]['obligatory'] = false;
+					}
+					jsonString['_embedded']['question-interventions'][i_q]['questionType'] = 0;
+
+					jsonString['_embedded']['question-interventions'][i_q]['complexConditions'] = [];
+
+
+
+
+					jsonString['_embedded']['question-interventions'][i_q]['options'] = [];
+					jsonString['_embedded']['question-interventions'][i_q]['conditions'] = new Object();
+
+					i++;
+					i_q++;
+
+				} else if ($(this).hasClass('panelCheck')) {
+
+					jsonString['_embedded']['question-interventions'][i_q] = new Object();
+					jsonString['_embedded']['question-interventions'][i_q]['type'] = "question";
+					jsonString['_embedded']['question-interventions'][i_q]['statement'] = $(this).find('textarea.question').val();
+					var thisBlockNumber = parseInt($(this).find('.blockNumber').html());
+					jsonString['_embedded']['question-interventions'][i_q]['orderPosition'] = thisBlockNumber;
+					if (thisBlockNumber == first) {
+						jsonString['_embedded']['question-interventions'][i_q]['first'] = true;
+					} else {
+						jsonString['_embedded']['question-interventions'][i_q]['first'] = false;
+					}
+					jsonString['_embedded']['question-interventions'][i_q]['next'] = $(this).find('select.selectBlock').val();
+					if ($(this).find('input.checkObligatory').is(':checked')) {
+						jsonString['_embedded']['question-interventions'][i_q]['obligatory'] = true;
+					} else {
+						jsonString['_embedded']['question-interventions'][i_q]['obligatory'] = false;
+					}
+					jsonString['_embedded']['question-interventions'][i_q]['questionType'] = 2;
+
+					jsonString['_embedded']['question-interventions'][i_q]['complexConditions'] = [];
+
+
+
+
+					jsonString['_embedded']['question-interventions'][i_q]['options'] = [];
+					jsonString['_embedded']['question-interventions'][i_q]['conditions'] = new Object();
+
+					var j = 0;
+					$(this).find('.alternative').each(function(){
+
+						jsonString['_embedded']['question-interventions'][i_q]['options'][j] = $(this).find('textarea').val();
+
+						j++;
+
+					});
+
+					i++;
+					i_q++;
+
+				}
+
+			}
+		});
+
+// $('#jsonTest').html(JSON.stringify(jsonString));
+//window.opener.JSONResult(JSON.stringify(jsonString));
+window.opener.interventionsCallBack(jsonString);
+window.close();
+
+}
+
+
+/*
+$.ajax({
+	url: '',
+	type: 'POST',
+	data: JSON.stringify(arr),
+	contentType: 'application/json; charset=utf-8',
+	dataType: 'json',
+	async: false,
+	success: function(msg) {
+		alert(msg);
+	}
+});
+*/
+
+// });
+// abre a tela
+$(document).on( "click", ".getMedia", function(event) {
+	var idPopUp = $(this).closest(".panel").index();
+	event.preventDefault();
+	var w = window.open("../getMedia.html?id="+idPopUp, "popupWindowGetMedia", "width=800, height=600, scrollbars=yes");
+	var $w = $(w.document.body);
+});
+
+
+
+});
+
+function mediasCallBack(result) {
+	/* result = "{\"mediaType\":\"video\",\"url\":\"aaa\",\"id\":1}"; */
+	//result = JSON.parse(result);
+
+	var idPopUp = result.id;
+	var mediaUrl = result.url;
+	var mediaType = result.mediaType;
+
+	$('#panel-group .panel').eq(idPopUp).find('.mediaUrl').val(mediaUrl);
+	$('#panel-group .panel').eq(idPopUp).find('.mediaType').val(mediaType);
+}
+
+
+$(document).find('.panel').prop('title', 'Esta intervenção é a primeira do evento. Para selecionar outra intervenção como a primeira, clique no ícone de estrela.');
+
+
+$("body").tooltip({
+    //selector: '[data-toggle="tooltip"]'
+    selector: '.panel-primary'
+});
+
+
+</script>
+<div id="debug" style="display:none;background-color:red;color:#FFF;padding:20px;font-weight:bold;position:fixed;right:0;bottom:0;">
+</div>
+</body>
+
+</html>

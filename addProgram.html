@@ -1,0 +1,2358 @@
+<!DOCTYPE html>
+<html lang="pt-BR" ng-app="espimApp" id="outer" ng-controller="mainController">
+  <head>
+    <meta charset='utf-8' />
+    <title>ESPIM - {{pageTitle}}</title>
+
+    <!-- CSS Files -->
+
+    <!-- Bootstrap -->
+   <!--  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css//bootstrap-theme.min.css">
+     -->
+   <!-- Paper bootstrap -->
+   <link rel="stylesheet" href="css/papel-bootstrap.css">
+     <!-- SweetAlert -->
+    <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css">
+    <!-- DateTime Picker -->
+    <link rel="stylesheet" href="bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+
+    <!-- bootstrap-duallistbox -->
+    <link rel="stylesheet" href="bower_components/angular-dual-multiselect-directive/dualmultiselect.css">
+
+    <!-- Espim -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- JavaScript Files -->
+    <!-- Jquery -->
+    <!--script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script-->
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+     <script
+    src="https://code.jquery.com/ui/1.10.4/jquery-ui.min.js"
+    integrity="sha256-oTyWrNiP6Qftu4vs2g0RPCKr3g1a6QTlITNgoebxRc4="
+    crossorigin="anonymous"></script>
+    <!-- Bootstrap -->
+    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- SweetAlert -->
+    <script type="text/javascript" src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
+    <!-- Angular -->
+    <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="bower_components/angular-loading-bar/build/loading-bar.min.js"></script>
+    <!-- Simple TimePicker -->
+    <script type="text/javascript" src="node_modules/simple-timepicker/dist/simple-timepicker.min.js"></script>
+    <!-- DateTime Picker -->
+    <script type="text/javascript" src="bower_components/moment/min/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
+    <!-- <script src="https://cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/4.17.37/build/js/bootstrap-datetimepicker.min.js"></script> -->
+<!-- endinject -->
+    <!-- <script src="https://rawgit.com/atais/angular-eonasdan-datetimepicker/0.3.8/dist/angular-eonasdan-datetimepicker.min.js"></script> -->
+    <link rel="stylesheet" href="bower_components/angularjs-datetime-picker/angularjs-datetime-picker.css" />
+    <script src="bower_components/angularjs-datetime-picker/angularjs-datetime-picker.js"></script>
+
+    <!-- Google API -->
+    <meta name="google-signin-client_id" content="288369558415-uogknhr1lk4qvd95l52r90gnsnkdgr0h.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" ></script>
+    <script src="https://apis.google.com/js/client:platform.js" ></script>
+    <script src="https://apis.google.com/js/api.js" ></script>
+
+
+    <!-- Espim -->
+    <script src="js/espim/access_control.js"></script>
+    <script src="js/espim/model.js"></script>
+    <script src="js/espim/rest_facade.js"></script>
+    <script src="js/espim/util.js"></script>
+
+  </head>
+  <body>
+    <div ng-include src="'html/menu.html'"></div>
+    <div class="container-background paper-shadow-z1">
+  <!-- <div ng-include src="'html/header.html'"></div> -->
+
+
+<!--   <div class="row">
+    <div class="col-md-12">
+      <h2>{{pageTitle}}</h2>
+      <div class="progress">
+        <div class="progress-bar" style="width: 25%;"></div>
+      </div>
+    </div>
+  </div> -->
+
+  <div class="row">
+    <section>
+        <div class="wizard">
+            <div class="wizard-inner">
+                <div class="connecting-line"></div>
+                <ul class="nav nav-tabs" role="tablist">
+
+                    <li role="presentation" class="{{ programId === undefined ? 'active': 'active'}} done">
+                        <a href="#step1" data-toggle="tab" aria-controls="step1" role="tab" aria-expanded="true" title="Informações do Programa">
+                            <span class="round-tab">
+                                <!-- <i class="glyphicon glyphicon-folder-open"></i> -->
+                                1
+                            </span>
+
+                        </a>
+                        <h6>Informações</h6>
+                    </li>
+
+                    <li role="presentation" class="{{ programId === undefined ? 'disabled': 'done'}}">
+                        <a href="#step2" data-toggle="tab" aria-controls="step2" role="tab" title="Observadores">
+                            <span class="round-tab">
+                                <!-- <i class="glyphicon glyphicon-pencil"></i> -->
+                                2
+                            </span>
+                        </a>
+                        <h6>Observadores</h6>
+                    </li>
+                    <li role="presentation" class="{{ programId === undefined ? 'disabled': 'done'}}">
+                        <a href="#step3" data-toggle="tab" aria-controls="step3" role="tab" title="Participantes">
+                            <span class="round-tab">
+                                <!-- <i class="glyphicon glyphicon-picture"></i> -->
+                                3
+                            </span>
+                        </a>
+                        <h6>Participantes
+                        </h6>
+                    </li>
+
+                    <li role="presentation" class="{{ programId === undefined ? 'disabled': 'done'}}">
+                        <a href="#complete" data-toggle="tab" aria-controls="complete" role="tab" title="Eventos">
+                            <span class="round-tab">
+                                <!-- <i class="glyphicon glyphicon-ok"></i> -->
+                                4
+                            </span>
+                        </a>
+                        <h6>Eventos</h6>
+                    </li>
+                </ul>
+            </div>
+
+            <form role="form" id="programForm" ng-submit="onSubmit()">
+                <div class="tab-content">
+                    <div class="tab-pane active" role="tabpanel" id="step1">
+                        <h4>Informações do Programa</h4>
+                      <div class="row">
+                        <div class="col-xs-12">
+                          <div class="form-group">
+                            <label for="title">Nome do Programa <span class="text-danger">*</span>:</label>
+                            <input id="txtTitle" ng-model="program.title" type="text" class="form-control"
+                            placeholder="Nome do programa" required autofocus>
+                          </div>
+                        </div>
+
+                      <div class="col-xs-12">
+                        <div class="form-group" >
+                          <label for="description">Descrição do Programa <span class="desc-counter">({{0 + program.description.length}}/500)</span>:</label>
+                          <textarea id="txtDescription"
+                          ng-model="program.description"
+                          placeholder="Descrição do Programa" type="text" class="form-control"
+                          ng-trim="false" maxlength="500"></textarea>
+                        </div>
+                      </div>
+                    <!-- </div> -->
+
+                      <div class="row">
+                          <div class="col-xs-4">
+                            <!-- <div class="form-group"> -->
+                     <!--          <label>Data de início:</label> -->
+                            <div class="form-inline">
+                              <div class="form-group">
+                                <div class='input-group' id='startDate'>
+                                  <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                  </span>
+                                   <input id="startDate-text" type='text' class="form-control" placeholder="Data de início" />
+                                </div>
+                              </div>
+                            </div>
+                            <!-- </div> -->
+                          </div>
+                          <div class="col-xs-4">
+                            <!-- <div class="form-group"> -->
+                     <!--          <label>Data de início:</label> -->
+                              <div class="form-inline">
+                              <div class="form-group">
+                                <div class='input-group ' id='startTime'>
+                                  <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-time"></span>
+                                  </span>
+                                  <input id="startTime-text" ng-model="startTime" type='text' class="form-control" placeholder="Hora de início"
+                                  datetime-picker date-format="HH:mm" hour="23" minute='59' time-only />
+
+                                </div>
+                              </div>
+                            </div>
+                            <!-- </div> -->
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-xs-4">
+                            <!-- <div class="form-group"> -->
+                              <!-- <label>Data de fim:</label> -->
+                              <div class="form-inline">
+                              <div class="form-group">
+                                <div class='input-group' id='endDate'>
+                                  <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                  </span>
+                                   <input id="endDate-text" type='text' class="form-control" placeholder="Data de fim" />
+                                </div>
+                              </div>
+                            </div>
+                            <!-- </div> -->
+                          </div>
+                          <div class="col-xs-4">
+                            <!-- <div class="form-group"> -->
+                     <!--          <label>Data de início:</label> -->
+                              <div class="form-inline">
+                                <div class="form-group">
+                                  <div class='input-group' id='endTime'>
+                                    <span class="input-group-addon">
+                                      <span class="glyphicon glyphicon-time"></span>
+                                    </span>
+                                    <input id="endTime-text" ng-model="endTime" type='text' class="form-control" placeholder="Hora de fim"
+                                    datetime-picker date-format="HH:mm" hour="23" minute='59' time-only />
+
+                                  </div>
+                                </div>
+                              </div>
+                            <!-- </div> -->
+                          </div>
+                      </div>
+                    </div>
+                    <br/>
+                      <span class="text-danger">* Campo Obrigatório</span>
+                      <br/>
+                      <br/>
+                      <div class="row">
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-default import-program {{ programsToImport.length == 0 ? 'disabled': ''}}" ng-click="importProgramModal()">Importar Programa</button>&nbsp;
+                        </div>
+                        <div class="col-md-offset-8 col-md-2">
+                         <!--  <button type="button" class="btn btn-primary next-step">Prosseguir</button>&nbsp;
+                        </div> -->
+                          <ul class="list-inline pull-right">
+                              <li><button type="button" class="btn btn-primary next-step">Prosseguir</button></li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="tab-pane" role="tabpanel" id="step2">
+                        <h4>Adicionar Observadores</h4>
+                        <div class="row">
+                        <div class="col-xs-9 col-md-9">
+                          <div class="form-group has-feedback has-feedback-left">
+                              <i class="glyphicon glyphicon-search form-control-feedback"></i>
+                              <input class="form-control" placeholder="Pesquisar observadores pelo nome" ng-model="searchTermOBS">
+                          </div>
+                        </div>
+                        <div class="col-xs-3 col-md-3 ">
+                          <button type="button" ng-click="filterSearchOBS = searchTermOBS" class="btn btn-default btn-block">Pesquisar observador
+                              <!-- <span class="glyphicon glyphicon-plus"></span> -->
+                            </button>
+                        </div>
+                      </div>
+                      <br/>
+                      <div  class="row">
+                          <!-- <dualmultiselect options="observersSelectionOptions">
+                          </dualmultiselect> -->
+                          <div class="col-md-12">
+                          <table class="filter-by-alphabet">
+                            <tr>
+                              <td ng-click="selectOBS($index)" onclick='changeTdColorO(this)' class="td-select {{ x == '*' ? 'td-selected-o' : ''}}" ng-repeat="x in alphabet">
+                                <a  >{{ x }}</a>
+                              </td>
+                            </tr>
+                          </table>
+                          </div>
+
+                            <div class="col-xs-12">
+                              <div class="observers-selected">
+                                <span ng-show="observersSelectionOptions.selectedItems.length == 0">
+                                  Você não selecionou nenhum observador.
+                                </span>
+                                <span ng-show="observersSelectionOptions.selectedItems.length != 0">
+                                  Você adicionou
+                                </span>
+                                <span class="ourBlue" ng-repeat="x in observersSelectionOptions.selectedItems"
+                                ng-if="$index < 5">{{x.name}}<span  class="ourBlue" ng-show="$index == observersSelectionOptions.selectedItems.length-2
+                                && observersSelectionOptions.selectedItems.length <= 5"> e</span><span ng-if="$index < observersSelectionOptions.selectedItems.length-2">,</span>
+                                  </span><span class="ourBlue" ng-show="observersSelectionOptions.selectedItems.length > 5">
+                                  e mais {{observersSelectionOptions.selectedItems.length - 5}} observadores</span></div>
+                            </div>
+
+                            <div class="col-xs-12">
+                              <h5>Selecionar observadores <span class="letter-filter-obs hidden">com a letra {{selectedOBS}}</span></h5>
+                              <div class="observers-by-alphabet">
+                                <div class="row">
+                                  <div class="col-md-4 col-xs-12" ng-repeat="x in filteredOBS1 = (observersSelectionOptions.selectedItems
+                                  | filter: filterSearchOBS | filter:startsWithSelectedOBS)">
+                                  <input type="checkbox"
+                                  name="selectedObservers[]"
+                                  ng-checked="true"
+                                  ng-model="observers.selected"
+                                  ng-click="transfer(observersSelectionOptions.selectedItems,
+                                  observersSelectionOptions.items, observersSelectionOptions.selectedItems.indexOf(x))">{{x.name}}
+                                  </div>
+                                  <div class="col-md-4 col-xs-12" ng-repeat="x in filteredOBS2 = (observersSelectionOptions.items
+                                  | filter: filterSearchOBS | filter:startsWithSelectedOBS)">
+                                   <input type="checkbox"
+                                  name="selectedObservers[]"
+                                  ng-model="observers.selected"
+                                   ng-click="transfer(observersSelectionOptions.items,
+                                  observersSelectionOptions.selectedItems, observersSelectionOptions.items.indexOf(x))">{{x.name}}
+                                  </div>
+                                  <div class="col-md-12 col-xs-12" ng-hide="filteredOBS1.concat(filteredOBS2).length">
+                                  Não foram encontrados observadores para esse filtro
+                                </div>
+
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        <div class="row">
+                          <div class="col-md-2">
+                           <button type="button" ng-click="addObserver()" class="btn btn-default">Adicionar observador
+                              <!-- <span class="glyphicon glyphicon-plus"></span> -->
+                            </button>
+                          </div>
+                          <div class="col-md-10">
+                            <ul class="list-inline pull-right">
+                                <li><button type="button" class="btn btn-prev prev-step">Voltar</button></li>
+                                <li><button type="button" class="btn btn-primary next-step">Prosseguir</button></li>
+                            </ul>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" role="tabpanel" id="step3">
+                        <h4>Adicionar Participantes</h4>
+                        <div class="row">
+                        <div class="col-xs-9">
+                          <div class="form-group has-feedback has-feedback-left">
+                              <i class="glyphicon glyphicon-search form-control-feedback"></i>
+                              <input class="form-control" placeholder="Pesquisar participantes pelo nome" ng-model="searchTermPART">
+                          </div>
+                        </div>
+                        <div class="col-xs-3">
+                          <button type="button" ng-click="filterSearchPART = searchTermPART" class="btn btn-default btn-block">Pesquisar participante
+                              <!-- <span class="glyphicon glyphicon-plus"></span> -->
+                            </button>
+                        </div>
+                      </div>
+                      <br/>
+                      <div  class="row">
+                          <!-- <dualmultiselect options="observersSelectionOptions">
+                          </dualmultiselect> -->
+                          <div class="col-md-12">
+                          <table class="filter-by-alphabet" >
+                            <tr>
+                              <td onclick='changeTdColorP(this)' class="td-select {{ x == '*' ? 'td-selected-p' : ''}}" ng-repeat="x in alphabet">
+                                <a ng-click="selectPART($index)">{{ x }}</a>
+                              </td>
+                            </tr>
+                          </table>
+                          </div>
+
+                            <div class="col-xs-12">
+                              <div class="participants-selected">
+                                <span ng-show="participantsSelectionOptions.selectedItems.length == 0">
+                                  Você não selecionou nenhum participante.
+                                </span>
+                                <span ng-show="participantsSelectionOptions.selectedItems.length != 0">
+                                  Você adicionou
+                                </span>
+                                <span class="ourBlue" ng-repeat="x in participantsSelectionOptions.selectedItems"
+                                ng-if="$index < 5">{{x.name}}<span class="ourBlue" ng-show="$index == participantsSelectionOptions.selectedItems.length-2
+                                && participantsSelectionOptions.selectedItems.length <= 5"> e</span><span class="ourBlue" ng-if="$index < participantsSelectionOptions.selectedItems.length-2">,</span>
+                                  </span><span ng-show="participantsSelectionOptions.selectedItems.length > 5">
+                                  e mais {{participantsSelectionOptions.selectedItems.length - 5}} participantes</span></div>
+                            </div>
+
+                            <div class="col-xs-12">
+                              <h5>Selecionar participantes <span class="letter-filter-part hidden">com a letra {{selectedPART}}</span></h5>
+                              <div class="participants-by-alphabet">
+                                <div class="row">
+                                  <div class="col-md-4 col-xs-12" ng-repeat="x in filteredPART1 = (participantsSelectionOptions.selectedItems
+                                  | filter: filterSearchPART | filter:startsWithSelectedPART)">
+                                  <input type="checkbox"
+                                  name="selectedParticipants[]"
+                                  ng-checked="true"
+                                  ng-model="participants.selected"
+                                  ng-click="transfer(participantsSelectionOptions.selectedItems,
+                                  participantsSelectionOptions.items, participantsSelectionOptions.selectedItems.indexOf(x))">{{x.name}}
+                                  </div>
+                                  <div class="col-md-4 col-xs-12" ng-repeat="x in filteredPART2 = (participantsSelectionOptions.items
+                                  | filter: filterSearchPART | filter:startsWithSelectedPART)">
+                                   <input type="checkbox"
+                                  name="selectedParticipants[]"
+                                  ng-model="participants.selected"
+                                   ng-click="transfer(participantsSelectionOptions.items,
+                                  participantsSelectionOptions.selectedItems, participantsSelectionOptions.items.indexOf(x))">{{x.name}}
+                                  </div>
+                                  <div class="col-md-12 col-xs-12" ng-hide="filteredPART1.concat(filteredPART2).length">
+                                  Não foram encontrados participantes para esse filtro
+                                </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        <div class="row">
+                          <div class="col-md-2">
+                            <button type="button" ng-click="addParticipant()" class="btn btn-default">Adicionar participante
+                             <!-- <span class="glyphicon glyphicon-plus"></span> -->
+                          </button>
+                          </div>
+                          <div class="col-md-10">
+                            <ul class="list-inline pull-right">
+                                <li><button type="button" class="btn btn-prev prev-step">Voltar</button></li>
+                                <li><button type="button" class="btn btn-primary next-step">Prosseguir</button></li>
+                            </ul>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" role="tabpanel" id="complete">
+                        <h4>Adicionar Eventos</h4>
+                        <div class="form-group" id="accordion">
+                          <div class="panel panel-primary" ng-if="events.length == 0">
+                            <div class="panel-heading">
+                              Não há eventos.
+                            </div>
+                        </div>
+                          <div class="panel panel-primary" ng-repeat="event in events">
+                            <div class="panel-heading">
+                             <!--  <span class="glyphicon glyphicon-list"> </span> -->
+                             <a href="#" id="activeCollapse{{event.fakeId}}" class="icon-at-header"
+                              data-toggle="collapse" data-parent="#accordion"
+                              onclick="ActivateDoublePanels(this)" ng-click="editEvent(event, false)"
+                             >{{event.title == "" ? 'Novo Evento': event.title}} </a>
+                             <span class="pull-right">
+                              <a class=" icon-at-header" id="activeCollapse{{event.fakeId}}" onclick="ActivateDoublePanels(this)" ng-click="editEvent(event, false)"  ><span class="glyphicon glyphicon-pencil"></span></a>
+                              <a class=" icon-at-header"  href="" ng-click="deleteEvent(event)"><span class="glyphicon glyphicon-trash"></span></a>
+                              </span>
+                            </div>
+                          <div id="collapse{{event.fakeId}}" class="panel-collapse collapse collapse0 {{ event.fakeId >= fakeIdInitial ? 'in' : ''}}">
+                            <div class="panel-body " id="activeCollapse{{event.fakeId}}" onclick="ActivateDoublePanels(this)" ng-click="editEvent(event, false)">
+                                <div class="list-group">
+                                  <!-- <div class="list-group-item" ng-if="events.length == 0" >Não há eventos.</div> -->
+                                  <div class="list-group-item">
+                                    <div class="row">
+                                      <div class="col-md-6">Disparo:
+                                        <span ng-if="event.triggers.length == 0">Não há disparos adicionados.</span>
+                                        <!-- <span ng-repeat="trigger in event.triggers"> -->
+                                          <span>
+                                          {{ event.triggers[0].toReadableString() | lowercase }}
+                                        </span>
+                                        <span ng-show="event.triggers.length == 2 ">e mais 1 disparo.</span>
+                                        <span ng-show="event.triggers.length > 2 ">e mais {{event.triggers.length - 1}} disparos.</span>
+                                      </div>
+                                      <div class="col-md-4">
+                                        Intervenções Cadastradas: {{event.interventions.length}}
+                                      </div>
+                                    </div>
+                                    <div class="pull-right action-buttons">
+                                     </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div id="collapse2{{event.fakeId}}" class="panel-collapse collapse2 collapse {{ event.fakeId < fakeIdInitial ? 'in' : ''}} {{fakeId}}">
+                              <!-- <form ng-submit="onSubmitEvent()"> -->
+                                <div id="eventsModal">
+                              <div class="panel-body event-panel-body">
+                                <div class="row">
+                                  <div class="col-md-12">
+                                  <div class="form-group">
+                                      <label for="title">Título <span class="text-danger">*</span>:
+                                      <input ng-model="event.title" id="event-title-{{event.fakeId}}" size="1000" type="text" placeholder="Título do Evento" class="form-control" required autofocus>
+                                  </div>
+                                  </div>
+                                  <div class="col-md-12">
+                                  <div class="form-group" >
+                                    <label for="description">Descrição do Evento <span class="desc-counter">({{0 + event.description.length}}/500)</span>:</label>
+                                    <textarea id="txtDescription" ng-model="event.description" class="event-desc-{{event.fakeId}} form-control" placeholder="Descrição do Evento" type="text"
+                                    ng-trim="false" maxlength="500" ></textarea>
+                                  </div>
+                                </div>
+                              </div>
+                                <div class="row">
+                                  <div class="col-md-12 center">
+                                      <button type="button" class="btn btn-primary create-interventions" ng-click="createInterventions()">
+                                      {{ interventions.length == 0 ? 'Adicionar intervenções' : 'Editar intervenções'}}
+                                    </button>
+                                    </div>
+                                    <div class="col-md-12">
+                                      </span>Intervenções cadastradas</span>
+                                    </div>
+                                    <!-- <div class="col-md-12 subitens-at-event"> -->
+                                        <!-- <ul class="list-group"> -->
+                                    <div class="col-md-12 subitens-at-event" ng-if="interventions.length == 0">Não há intervenções cadastradas.</div>
+                                    <div class="col-md-12 subitens-at-event" ng-repeat="intervention in interventions">{{intervention.friendlyOutput()}}</div>
+                                  <!-- </ul> -->
+                                    <!-- </div> -->
+                                </div>
+                                <br/>
+                                <!-- <br/> -->
+                                <div class="row">
+                                  <div class="col-md-12">
+                                      </span>Disparos cadastrados</span>
+                                  </div>
+                                  <!-- <div class="col-md-12 subitens-at-event"> -->
+                                    <!-- <ul class="list-group"> -->
+                                      <div class="col-md-12 subitens-at-event" ng-if="triggers.length == 0">Não há disparos cadastrados.</div>
+
+                                      <div style="display: inline;" ng-repeat="trigger in triggers">
+                                        <span ng-show="trigger.triggerType != 'manual'" class="label label-info labels-trigger">{{ trigger.toReadableString() }}
+                                        <!-- <div class="pull-right action-buttons"> -->
+                                          <a href="" ng-click="deleteTrigger($index)" class="trash"><span class="glyphicon glyphicon-remove"></span></a>
+                                        <!-- </div> -->
+                                      </span>
+                                    <!-- </ul> -->
+                                  </div>
+                                </div>
+                                <div class="addTrigger">
+                                <div class="row">
+                                  <div class="col-md-12">
+                                      </span>Adicionar disparo</span>
+                                  </div>
+                                </div>
+                                <div class="row">
+                                <!--   <div class="col-md-12 subitens-at-event">
+                                    <div class="radio">
+                                      <label><input type="radio" ng-model="eventForm.triggerType" value="manual"/>Disparo manual</label>
+                                    </div>
+                                  </div> -->
+
+                                  <div class="col-md-11 subitens-at-event alarm-daily-parent">
+                                    <div class="radio">
+                                      <label><input type="radio" ng-model="eventForm.triggerType" value="daily" />Diariamente</label>
+                                    </div>
+                                                                      </div>
+                                  <br/>
+
+                                  <div class="row alarm-daily">
+
+                                  <div class="row">
+                                  <div class="col-md-6 sub-sub-subitens-at-event ">
+                                      <label>Horário:</label>
+                                      <input  id="triggerTimePicker{{event.fakeId}}" class="form-control" style="max-width: 225px;" onchange="validateHhMm(this);"
+                                       placeholder="Selecione o horário"  ng-model="eventForm.triggerTime" datetime-picker date-format="HH:mm" hour="23" minute='59' time-only/>
+                                    </div>
+                                  </div>
+
+                                  <div class="row ">
+                                  <div class="col-md-6 sub-subitens-at-event ">
+                                    <!-- <div class="form-group"> -->
+                                      <div class="input-group">
+                                        <span class=" input-group-addon glyphicon glyphicon-bell"></span>
+                                        <select ng-model="eventForm.triggerPriority" class="form-control" id="selectPriority" style="max-width: 200px;">
+                                          <option selected disabled value=''>Selecione o tipo do som:</option>
+                                          <option value="NC">Notificação Curta</option>
+                                          <option value="AL">Alarme</option>
+                                          <option value="NL">Notificação Longa</option>
+                                        </select>
+                                      </div>
+                                  </div>
+                                </div>
+
+                                   <div class="row  ">
+                                    <div class="col-md-6 sub-sub-subitens-at-event">
+                                      <label>Tempo de exibição do alerta:</label>
+                                      <input ng-model="eventForm.timeOut" type="number" class="form-control" style="max-width: 225px;" placeholder="Valor em minutos">
+                                    </div>
+                                 </div>
+                               </div>
+                <!--                   <div class="row">
+                                  <div class="col-md-offset-3 col-md-6">
+                                    <hr class="dashed">
+                                  </div>
+                                 </div> -->
+                                  <div class="col-md-12 subitens-at-event alarm-weekly-parent">
+                                        <div class="radio">
+                                          <label><input type="radio" ng-model="eventForm.triggerType" value="weekly" />Semanalmente</label>
+                                          </div>
+                                  </div>
+
+                                  <div class="row alarm-weekly hidden">
+                                    <br/>
+                                  <div class="col-md-offset-1 col-md-11  sub-sub-subitens-at-event weekly-checks" >
+                                          <div class="row"><div class="col-md-12">
+                                          <label class="checkbox-inline disabled hidden"><input ng-model="eventForm.triggerDays[0]" class="checkbox-trigger" type="checkbox" value="" disabled />Domingo</label><br/>
+                                          </div></div>
+                                          <div class="row"><div class="col-md-12">
+                                          <label class="checkbox-inline disabled hidden"><input ng-model="eventForm.triggerDays[1]" class="checkbox-trigger" type="checkbox" value="" disabled />Segunda</label><br/>
+                                          </div></div>
+                                          <div class="row"><div class="col-md-12">
+                                          <label class="checkbox-inline disabled hidden"><input ng-model="eventForm.triggerDays[2]" class="checkbox-trigger" type="checkbox" value="" disabled />Terça</label><br/>
+                                          </div></div>
+                                          <div class="row"><div class="col-md-12">
+                                          <label class="checkbox-inline disabled hidden"><input ng-model="eventForm.triggerDays[3]" class="checkbox-trigger" type="checkbox" value="" disabled />Quarta</label><br/>
+                                          </div></div>
+                                          <div class="row"><div class="col-md-12">
+                                          <label class="checkbox-inline disabled hidden"><input ng-model="eventForm.triggerDays[4]" class="checkbox-trigger" type="checkbox" value="" disabled />Quinta</label><br/>
+                                          </div></div>
+                                          <div class="row"><div class="col-md-12">
+                                          <label class="checkbox-inline disabled hidden"><input ng-model="eventForm.triggerDays[5]" class="checkbox-trigger" type="checkbox" value="" disabled />Sexta</label><br/>
+                                          </div></div>
+                                          <div class="row"><div class="col-md-12">
+                                          <label class="checkbox-inline disabled hidden"><input ng-model="eventForm.triggerDays[6]" class="checkbox-trigger" type="checkbox" value="" disabled />Sábado</label><br/>
+                                          </div></div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-md-6 sub-sub-subitens-at-event">
+                                      <label>Horário:</label>
+                                    <input  id="triggerTimePicker{{event.fakeId}}" class="form-control"
+                                    style="max-width: 225px;"
+                                     placeholder="Selecione o horário"  ng-model="eventForm.triggerTime" datetime-picker date-format="HH:mm" hour="23" minute='59' time-only/>
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                   <div class="col-md-6 sub-subitens-at-event">
+                                    <!-- <div class="form-group"> -->
+                                      <div class="input-group">
+                                        <span class=" input-group-addon glyphicon glyphicon-bell"></span>
+                                        <select ng-model="eventForm.triggerPriority" class="form-control" id="selectPriority" style="max-width: 200px;">
+                                          <option selected="selected" value=''>Selecione o tipo do som:</option>
+                                          <option value="NC">Notificação Curta</option>
+                                          <option value="AL">Alarme</option>
+                                          <option value="NL">Notificação Longa</option>
+                                        </select>
+                                      </div>
+                                  </div>
+                                </div>
+                                    <div class="row sub-sub-subitens-at-event">
+                                    <div class="col-ms-12">
+                                      <label>Tempo de exibição do alerta:</label>
+                                      <input ng-model="eventForm.timeOut" style="max-width: 225px;" class="form-control" placeholder="Valor em minutos">
+                                    </div>
+                                 </div>
+                               </div>
+         <!--                         <div class="row">
+                                  <div class="col-md-offset-3 col-md-6">
+                                    <hr class="dashed">
+                                  </div>
+                                 </div> -->
+                                <!-- </div> -->
+                                  <!-- </div> -->
+                                 <!--  <div class="col-md-12 subitens-at-event">
+                                    <div class="radio">
+                                      <label><input type="radio" ng-model="eventForm.triggerType" value="custom"/>Customizável</label>
+                                    </div>
+
+                                  </div> -->
+                                  <div class="col-md-12 subitens-at-event alarm-custom-parent">
+                                        <div class="radio">
+                                          <label><input type="radio" ng-model="eventForm.triggerType" value="custom" />Customizável</label>
+                                          </div>
+                                  </div>
+                                  <div class="col-md-12 sub-subitens-at-event alarm-custom hidden">
+                                    <!-- <div class="form-group"> -->
+                                        <div ng-repeat="dayId in getNumber(7) track by $index">
+                                          <div class="row">
+                                            <div class="col-md-2">
+                                            <label class="checkbox-inline disabled hidden">
+                                              <input ng-model="eventForm.triggerDays[$index]" class="checkbox-trigger checkbox-trigger-custom" type="checkbox" value="" disabled />{{eventForm.triggerDaysText[$index]}}</label>
+                                            </div>
+                                            <div class="col-md-9">
+                                              <a href="#" ng-click="addCustomItem(customArr[$index], $index)" ><span class="glyphicon glyphicon-plus"></span> HORÁRIO</a>
+                                            </div>
+                                          </div>
+
+                                        <div ng-repeat="customId in getNumber(customArr[$index]) track by $index"
+                                        id="custom-time-{{$parent.$index}}-{{$index}}" class="custom-time row">
+                                          <div class="col-md-offset-4 col-md-4">
+                                              <div class="form-group">
+                                              <div class='form-inline time' id=''>
+                                              <input  id="triggerTimePicker{{event.fakeId}}-{{$parent.$index}}-{{$index}}" class="form-control" placeholder="Selecione o horário"
+                                              ng-model="customTriggerTime[$parent.$index][$index]"
+                                              datetime-picker date-format="HH:mm" hour="23" minute='59' time-only/>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        <div class="col-md-4">
+                                          <div class="input-group">
+                                            <span class=" input-group-addon glyphicon glyphicon-bell"></span>
+                                            <select ng-model="customTriggerPriority[$parent.$index][$index]" class="form-control" id="selectPriority{{event.fakeId}}-{{$parent.$index}}-{{$index}}" style="max-width:50%;">
+                                              <option selected disabled value=''>Selecione o tipo do som:</option>
+                                              <option value="NC">Notificação Curta</option>
+                                              <option value="AL">Alarme</option>
+                                              <option value="NL">Notificação Longa</option>
+                                            </select>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                  </div>
+
+                                 <div class="row">
+                                    <div class="col-md-offset-9 col-md-2">
+                                      <button type="button" class="btn btn-primary" ng-click="addTrigger(event.fakeId)" id="saveTrigger">Adicionar Disparo</button>
+                                    </div>
+                                 </div>
+
+                               </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="checkbox">
+                                      <label><input type="checkbox" id="checkManual{{event.fakeId}}" ng-click="removeManualTrigger(event.fakeId)" class="checkManual" {{event.isManual}}>Participante pode auto-iniciar o evento?</label>
+                                    </div
+                                </div>
+                                <div class="row">
+                                  <div class="col-md-12">&nbsp;</div>
+                                <div class="col-md-12">
+                                     <span class="text-danger">* Campo obrigatório</span>
+                                </div>
+                              </div>
+                                <div class="col-md-12 center">
+                              <button type="button" ng-click="onSubmitEvent(event.fakeId)" class="btn btn-primary">Salvar evento</button>
+                              </div>
+                              </div>
+                            </div>
+                          <!-- </form> -->
+                        </div>
+
+                          </div>
+
+                         <!--  <p>
+                            <button type="button" ng-click="addEvent()" class="btn btn-info">Adicionar um novo evento <span class="glyphicon glyphicon-plus"></span></button>
+                          </p> -->
+                        </div>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <ul class="list-inline ">
+                                <li><button type="button" ng-click="addEvent()" class="btn btn-default">Adicionar evento</button></li>
+                                <li><button type="button" class="btn btn-default {{ programsToImport.length == 0 ? 'disabled': ''}}" ng-click="importEventModal()">Importar evento</button></li>
+                            </ul>
+                          </div>
+                          <div class="col-md-6">
+                            <ul class="list-inline pull-right">
+                                <li><button type="button" class="btn btn-prev prev-step">Voltar</button></li>
+                                <li><button type="submit" class="btn btn-primary {{ events.length === 0 ? 'disabled': ''}}">Finalizar Programa</button></li>
+                            </ul>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </form>
+        </div>
+    </section>
+   </div>
+
+
+  <!-- <form id="programForm" ng-submit="onSubmit()">
+    <div class="row">
+      <div id="tabs" class="col-md-12">
+        <ul class="nav nav-tabs hidden">
+          <li id="li-1" class="active"><a data-toggle="tab" href="#info">Informações</a></li>
+          <li id="li-2" ><a data-toggle="tab" href="#observers">Observadores</a></li>
+          <li id="li-3" ><a data-toggle="tab" href="#participants">Participantes</a></li>
+          <li id="li-4" ><a data-toggle="tab" href="#events">Eventos</a></li>
+        </ul>
+        <div class="tab-content">
+          <div id="info" class="tab-pane active">
+
+          </div>
+          <div id="observers" class="tab-pane">
+
+          </div>
+          <div id="participants" class="tab-pane">
+
+          </div>
+          <div id="events" class="tab-pane">
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+   <!--  <div class="row">
+      <div class="col-md-offset-8 col-md-2">
+          <button type="button" class="btn btn-default prev-program hidden">Anterior</button>&nbsp;
+      </div>
+      <div class="col-md-2">
+        <button type="button" class="btn btn-primary next-program">Prosseguir</button>&nbsp;
+        <button type="submit" value="save" class="btn btn-primary save-program hidden">Salvar</button>
+      </div>
+    </div> -->
+  <!-- </form> -->
+</div>
+
+<!-- <form ng-submit="onImportProgram()"> -->
+  <div id="importProgramModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Importar Programa</h4>
+        </div>
+
+        <div class="modal-body">
+          <div class="container" >
+            <div ng-include src="'html/ImportProgramModal.html'"></div>
+          </div>
+        </div>
+
+      <!--   <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+            <button type="submit"  class="btn btn-primary">Salvar</button>
+        </div> -->
+      </div>
+    </div>
+  </div>
+<!-- </form> -->
+
+<div id="importEventModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Importar Evento</h4>
+        </div>
+
+        <div class="modal-body">
+          <div class="container" >
+            <div ng-include src="'html/ImportEventModal.html'"></div>
+          </div>
+        </div>
+
+      <!--   <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+            <button type="submit"  class="btn btn-primary">Salvar</button>
+        </div> -->
+      </div>
+    </div>
+  </div>
+
+
+<form ng-submit="onSubmitObserver()">
+  <div id="observersModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Adicionar Observador</h4>
+        </div>
+
+        <div class="modal-body">
+          <div class="container" >
+            <div ng-include src="'html/ObserverForm.html'"></div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+            <button type="submit"  class="btn btn-primary">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+
+<form ng-submit="onSubmitParticipant()">
+  <div id="participantsModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Adicionar Participante</h4>
+        </div>
+
+        <div class="modal-body">
+          <div class="container" >
+            <div ng-include src="'html/ParticipantForm.html'"></div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+            <button type="submit"  class="btn btn-primary">Salvar</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</form>
+
+<!--  -->
+
+  <script>
+  var caManager = new ControlAccessManager();
+  if (!caManager.isUserLogged()) {
+    window.location.replace("index.html");
+  }
+  var app = angular.module("espimApp", [
+    'dualmultiselect', 'angular-loading-bar', 'angularjs-datetime-picker'
+  ]);
+
+  app.controller("mainController",  function($scope, $http, $q) {
+    $scope.programId = getUrlParameter('programId');
+    $scope.pageTitle = $scope.headerTitle = "Adicionar Programa";
+    $scope.profileImage = caManager.user.icon;
+    $scope.username = caManager.user.name;
+    $scope.email = caManager.user.email;
+
+    $scope.getMenuClass = function(name) {
+      return name == 'program' ? 'dropdown active' : 'dropdown';
+    }
+
+    $scope.programsToImport = [];
+    $scope.ObserverREST = new ObserverRestFacade($http, $q);
+    $scope.ParticipantREST = new ParticipantRestFacade($http, $q);
+    $scope.EventREST = new EventRestFacade($http, $q);
+    $scope.ProgramREST = new ProgramRestFacade($http, $q);
+    $scope.InterventionREST = new InterventionRestFacade($http, $q);
+    $scope.TriggerREST = new TriggerRestFacade($http, $q);
+
+    $scope.observer = new Observer();
+    $scope.observer.id = caManager.user.id;
+    $scope.observer.name = caManager.user.name;
+    $scope.observer.email = caManager.user.email;
+
+    $scope.ProgramREST.getByObserver($scope.observer, 0, 20)
+      .then(function(programs) {
+
+      //Pagina settings: no pagination for now
+      $scope.currentPage = 1;
+      $scope.lastPage = 1;
+      $scope.firstPage = 1;
+      $scope.totalElements = programs.length;
+      $scope.pageRange = [1];
+      console.log(programs);
+      $scope.programsToImport = programs;
+    });
+
+    // $scope.superType = 'manual';
+    $scope.fakeId = -1;
+    $scope.eventForm = {
+      triggerType: 'daily',
+      triggerTime: '00:00',
+      triggerPriority: '',
+      timeOut: '',
+      triggerDays: [false, false, false, false, false, false, false],
+      triggerDaysText: ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
+    };
+    $scope.customArr = [0, 0, 0, 0, 0, 0, 0];
+    $scope.customTriggerTime = {
+      0: [],
+      1: [],
+      2: [],
+      3: [],
+      4: [],
+      5: [],
+      6: [],
+      7: []
+    };
+    $scope.customTriggerPriority = {
+      0: [],
+      1: [],
+      2: [],
+      3: [],
+      4: [],
+      5: [],
+      6: [],
+      7: []
+    };
+
+    $scope.triggers = [];
+    $scope.interventions = [];
+    $scope.events = [];
+    $scope.isNew = true;
+    $scope.isNewEvent = true;
+
+    // $scope.ObserverREST.listAll().then(function(observers){
+    //   // console.log("alo");
+    //   // $scope.observers = observers;
+    // });
+
+    $scope.startDate = $('#startDate-text').datetimepicker({
+                    format: 'DD/MM/YYYY',
+                    locale: 'pt-br'
+                }).data("DateTimePicker");
+
+
+    // $scope.startTime = $('#startTime-text').datetimepicker({
+    //                         locale: moment.locale('pt'),
+    //                         format: 'HH:mm',
+    //                         // sideBySide : true
+    //                       }).data("DateTimePicker");
+
+    $scope.endDate = $('#endDate-text').datetimepicker({
+                        locale: 'pt-br',
+                        // sideBySide : true
+                        format: 'DD/MM/YYYY',
+                      }).data("DateTimePicker");
+
+    // $scope.endTime = $('#endTime-text').datetimepicker({
+    //                         locale: moment.locale('pt'),
+    //                         format: 'HH:mm',
+    //                         // sideBySide : true
+    //                       }).data("DateTimePicker");
+
+    // $scope.triggerTimePicker = $('#triggerTimePicker').datetimepicker({
+    //                         locale: moment.locale('pt-br'),
+    //                         format: 'HH:mm',
+    //                         // sideBySide : true
+    //                       }).data("DateTimePicker")
+
+     /* selection initialization */
+
+    $scope.observersSelectionOptions = {
+      filterPlaceHolder: 'Escreva aqui para filtrar os observadores.',
+      labelAll: 'Disponíveis',
+      labelSelected: 'Selecionados',
+      helpMessage: ' Clique sobre os observadores para transferí-los entre as listas.',
+      orderProperty: 'name',
+      showAttribute: 'name',
+      items: [],
+      selectedItems: []
+    };
+
+    $scope.participantsSelectionOptions = {
+      filterPlaceHolder: 'Escreva aqui para filtrar os participantes.',
+      labelAll: 'Disponíveis',
+      labelSelected: 'Selecionados',
+      helpMessage: ' Clique sobre os participantes para transferí-los entre as listas.',
+      orderProperty: 'name',
+      showAttribute: 'name',
+      items: [],
+      selectedItems: []
+    };
+
+     var selections = [{
+      collection: $scope.observersSelectionOptions.items,
+      entity: 'observers'
+      }, {
+        collection: $scope.participantsSelectionOptions.items,
+        entity: 'participants'
+      }, {
+        collection: $scope.events,
+        entity: 'events'
+      }]
+
+    $scope.interventionsButton = "Adicionar Intervenções";
+
+    $scope.initProgram = function() {
+      $scope.program = new Program();
+
+
+      $scope.updateSelections();
+    }
+
+    // new Observer and Participant Layout
+    $scope.transfer = function(from, to, index) {
+        if (index >= 0) {
+          to.push(from[index]);
+          from.splice(index, 1);
+        } else {
+          for (var i = 0; i < from.length; i++) {
+            to.push(from[i]);
+          }
+          from.length = 0;
+        }
+        // console.log(from, to, index);
+      };
+
+    var str = "*abcdefghijklmnopqrstuvwxyz";
+    $scope.alphabet = str.toUpperCase().split("");
+
+    //used with ng-click
+    $scope.selectOBS = function ($index) {
+        $scope.selectedOBS = $scope.alphabet[$index];
+    }
+    // used in filter
+    $scope.startsWithSelectedOBS = function (value, index) {
+        if ($scope.selectedOBS && $scope.selectedOBS !== "*") {
+            $(".letter-filter-obs").removeClass("hidden");
+            return value.name[0].toUpperCase() === $scope.selectedOBS;
+        } else {
+            $(".letter-filter-obs").addClass("hidden");
+            return true;
+        }
+
+    }
+
+     //used with ng-click
+    $scope.selectPART = function ($index) {
+        $scope.selectedPART = $scope.alphabet[$index];
+    }
+    // used in filter
+    $scope.startsWithSelectedPART = function (value, index) {
+        if ($scope.selectedPART && $scope.selectedPART !== "*") {
+            $(".letter-filter-part").removeClass("hidden");
+            return value.name[0].toUpperCase() === $scope.selectedPART;
+        } else {
+            $(".letter-filter-part").addClass("hidden");
+            return true;
+        }
+
+    }
+
+
+// END OBS E PART
+
+    $scope.importProgramModal = function() {
+      $('#importProgramModal').modal();
+      // $scope.observer = new Observer();
+      // $scope.eventForm.triggerType = '';
+      //openObserverPopup();
+    }
+
+    $scope.importEventModal = function() {
+      $('#importEventModal').modal();
+      // $scope.observer = new Observer();
+      // $scope.eventForm.triggerType = '';
+      //openObserverPopup();
+    }
+
+    $scope.importProgram = function(program) {
+
+      swal({
+        title: "Importando Programa",
+        text: "Deseja importar o program '" + program.toString() + "'? Ele irá sobrescrever o conteúdo deste programa.",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sim",
+        cancelButtonText: "Não",
+        closeOnConfirm: true,
+        closeOnCancel: true
+      }, function(isConfirm) {
+        if (isConfirm) {
+
+          $scope.loadProgram(program.id, true, true);
+
+
+
+          // $scope.program.id = null;
+          // $scope.$apply();
+        }
+      });
+
+      // $('#importProgramModal').modal();
+      // $scope.observer = new Observer();
+      // $scope.eventForm.triggerType = '';
+      //openObserverPopup();
+    }
+
+    $scope.importEvent = function(event) {
+
+      swal({
+        title: "Importando Evento",
+        text: "Deseja importar o evento '" + event.title + "'? Um evento será adicionado ao programa atual.",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sim",
+        cancelButtonText: "Não",
+        closeOnConfirm: true,
+        closeOnCancel: true
+      }, function(isConfirm) {
+        if (isConfirm) {
+          if($scope.fakeIdInitial == null){
+            $scope.fakeIdInitial = $scope.fakeId;
+          }
+          // event.id = null;
+          event.imported = true;
+          event.title = "Cópia de " + event.title;
+          $scope.event = event;
+
+
+          $scope.fakeId -= 1;
+          $scope.event.fakeId =  $scope.fakeId;
+          $scope.events.push($scope.event);
+
+          $scope.isNewEvent = true;
+
+          $scope.event.triggers = event.triggers;
+          // $scope.triggers = event.triggers;
+
+          //     for (var ii = 0; ii < event.triggers.length; ii++){
+          //     if (event.triggers[ii].triggerType == "manual"){
+          //       $("#checkManual"+eventToLoad.fakeId).attr("checked", "checked");
+          //       }
+          //     }
+
+          $scope.event.interventions = event.interventions;
+          // $scope.interventions = event.interventions;
+          $scope.$apply();
+          $(".collapse0").addClass("in");
+          $(".collapse2").removeClass("in");
+
+          $scope.EventREST.add($scope.event, true).then(
+              function(event) {
+                console.log("afterEvent is add", event);
+
+                // swal({
+                //     title: "Evento Adicionado",
+                //     text: "O evento foi adicionado com sucesso",
+                //     type: "success"
+                //   },
+                //   function() {
+                    event.fakeId = $scope.fakeId;
+                    $scope.events.pop();
+                    $scope.events.push(event);
+
+                    $scope.$apply();
+                   // $("#collapse"+event.fakeId).addClass('in');
+                    // $('#eventsModal').modal('hide');
+                     $(".collapse0").addClass("in");
+                     $(".collapse2").removeClass("in");
+                  // });
+
+              }, errorAdding);
+        }
+      });
+
+      // $('#importProgramModal').modal();
+      // $scope.observer = new Observer();
+      // $scope.eventForm.triggerType = '';
+      //openObserverPopup();
+    }
+
+    $scope.addObserver = function() {
+      console.log('addObserver');
+      $('#observersModal').modal();
+      $scope.observer = new Observer();
+      $scope.eventForm.triggerType = '';
+      //openObserverPopup();
+    }
+
+    $scope.onSubmitObserver = function() {
+        console.log('onSubmit');
+
+        $scope.ObserverREST.add($scope.observer).then(
+          function(observer) {
+            swal({
+                title: "Observador Adicionado",
+                text: "O observador foi adicionado com sucesso",
+                type: "success"
+              },
+              function() {
+                $scope.observersSelectionOptions.selectedItems.push(observer);
+                $scope.$apply();
+                $('#observersModal').modal('hide');
+              });
+          },
+          function(response) {
+            console.log('Error:', response);
+            /*swal({
+              title: "Erro ao Salvar",
+              text: "Ocorreu o seguinte erro ao salvar o observador: " + response.status + ' ' + response.data.message,
+              type: "error",
+              confirmButtonText: "Ok"
+            });*/
+
+          swal({
+            title: "Erro ao Salvar",
+            text: "Já existe um observador cadastrado com esse e-mail",
+            type: "error",
+            confirmButtonText: "Ok"
+          });
+        });
+    }
+
+    $scope.addParticipant = function() {
+      console.log('addParticipant');
+      $('#participantsModal').modal();
+      $scope.participant = new Participant();
+    }
+
+     $scope.onSubmitParticipant = function() {
+        var promises = [];
+
+        promises.push($scope.ParticipantREST.add($scope.participant));
+        promises.push($scope.ObserverREST.getById(caManager.user.id));
+
+        $q.all(promises).then(
+          function(responses) {
+
+            var thisParticipant = responses[0];
+            var thisObserver = responses[1];
+
+            thisObserver.addContact(thisParticipant);
+
+            $scope.ObserverREST.save(thisObserver).then(
+              function(responses) {
+                  swal({
+                        title: "Participante Adicionado",
+                        text: "O participante foi adicionado com sucesso",
+                        type: "success"
+                      },
+                      function() {
+                          $scope.participantsSelectionOptions.selectedItems.push(thisParticipant);
+                          $scope.$apply();
+
+                          $('#participantsModal').modal('hide');
+                      });
+                  }, errorAdding);
+          },errorAdding);
+      };
+
+    $scope.addEvent = function() {
+
+      $(".collapse0").addClass("in");
+      $(".collapse2").removeClass("in");
+
+      if($scope.fakeIdInitial == null){
+        $scope.fakeIdInitial = $scope.fakeId;
+      }
+
+      $scope.event = new ActiveEvent();
+
+      $scope.fakeId -= 1;
+      $scope.event.fakeId =  $scope.fakeId;
+      $scope.event.title = "";
+      $scope.events.push($scope.event);
+
+      $scope.triggers = [];
+      $scope.interventions = [];
+      $scope.eventOperation = "Adicionar Evento";
+      $scope.hasInterventionsChanged = true;
+      $scope.hasTriggerChanged = true;
+
+      $scope.isNewEvent = true;
+
+      //  $("#triggerTimePicker").timepicker({
+      //   template: false,
+      //   minuteStep: 1,
+      //   showSeconds: false,
+      //   showMeridian: false
+      // });
+
+      $scope.eventForm.triggerType = 'daily';
+      if ($scope.fakeId == null){
+        $scope.eventForm.triggerTime = $("#triggerTimePicker").val();
+      }else{
+        $scope.eventForm.triggerTime = $("#triggerTimePicker"+$scope.fakeId).val();
+      }
+      $scope.eventForm.triggerDays = [false, false, false, false, false, false, false];
+      $scope.triggers = [];
+
+      // ActivateDoublePanels(null, fakeId);
+      // $('#eventsModal').modal();
+    }
+
+    $scope.deleteEvent = function(event) {
+      console.log('deleteEvent', event);
+
+      swal(
+        {
+          title: "Removendo Evento",
+          text: "Deseja remover o evento '" + event.title + "?",
+          type: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Sim",
+          cancelButtonText: "Não",
+          closeOnConfirm: true,
+          closeOnCancel: true
+        },
+        function(isConfirm) {
+          if (isConfirm) {
+
+            $scope.EventREST.delete(event).then(
+              function successCallback(response) {
+                $scope.events.splice($.inArray(event, $scope.events), 1);
+              },
+              function errorCallback(response) {
+                console.log("error on deleting", response);
+
+                swal(
+                  "Erro ao remover",
+                  "Ocorreu um erro tentar remover o evento. Ele será apenas desativado.",
+                  "error");
+
+                $scope.events.splice($.inArray(event, $scope.events), 1);
+              }
+            );
+          }
+        });
+    }
+
+    $scope.editEvent = function(eventToLoad, isNewEvent) {
+
+      if(eventToLoad.id == null){
+          $scope.triggers = [];
+          $scope.interventions =[];
+          $scope.isNewEvent = true;
+      }else{
+      $scope.EventREST.get(eventToLoad).then(
+        function(event) {
+            // console.log('editEvent', event);
+
+            $scope.event = event;
+            $scope.eventOperation = "Editar Evento";
+            $scope.hasInterventionsChanged = false;
+            $scope.hasTriggerChanged = false;
+            //$scope.triggers = [];
+            //$scope.interventions = [];
+
+            $scope.isNewEvent = isNewEvent;
+
+            //  $("#triggerTimePicker").timepicker({
+            //   template: true,
+            //   minuteStep: 1,
+            //   showSeconds: false,
+            //   showMeridian: false
+            // });
+            // $('#triggerTimePicker'+eventToLoad.fakeId).datetimepicker({
+            //                 locale: moment.locale('pt-br'),
+            //                 format: 'HH:mm',
+            //                 // sideBySide : true
+            //               }).data("DateTimePicker")
+
+              $scope.triggers = event.triggers;
+
+              for (var ii = 0; ii < event.triggers.length; ii++){
+              if (event.triggers[ii].triggerType == "manual"){
+                $("#checkManual"+eventToLoad.fakeId).attr("checked", "checked");
+                }
+              }
+
+              $scope.interventions = event.interventions;
+
+            // $('#eventsModal').modal();
+            // $scope.$apply();
+
+        }, errorAdding);}
+    }
+
+
+    $scope.updateSelections = function() {
+      console.log('updateSelections');
+      var promises = [];
+      promises.push($scope.ObserverREST.listAll());
+      // promises.push($scope.ParticipantREST.listAll());
+      promises.push($scope.ObserverREST.getContacts($scope.observer, 0, 100));
+
+      //promises.push($scope.EventREST.listAll());
+
+      $q.all(promises).then(
+
+        function(results) {
+          $.each(results, function(index, result) {
+            console.log(result);
+
+             if (index == 0) {
+                var observers = result[selections[index].entity];
+                var i;
+
+                for (i=0; i < observers.length; i++) {
+                  if (observers[i].email == caManager.user.email) {
+                    break;
+                  }
+                }
+                var thisObserver = observers[i];
+
+                observers.splice(i, 1);
+
+                $scope.observersSelectionOptions.selectedItems.push(thisObserver);
+            }else{
+              result.participants = result.contacts;
+            }
+
+            console.log(selections);
+
+            selections[index].collection.push.apply(
+              selections[index].collection,
+              result[selections[index].entity]);
+          });
+        },
+        function(response) {
+          console.log("Error retraiving values: ", response);
+        }
+      );
+    }
+
+    $scope.onSubmit = function() {
+
+      if ($scope.observersSelectionOptions.selectedItems.length == 0) {
+        swal({
+          title: "Erro ao Salvar",
+          text: "Por favor, selecione pelo menos um observador",
+          type: "warning",
+          confirmButtonText: "Ok"
+        });
+        //TODO: Mover para a aba correta
+      } else if ($scope.participantsSelectionOptions.selectedItems.length == 0) {
+        swal({
+          title: "Erro ao Salvar",
+          text: "Por favor, selecione pelo menos um participante",
+          type: "warning",
+          confirmButtonText: "Ok"
+          //TODO: Mover para a aba correta
+        });
+      } else if ($scope.events.length == 0) {
+        swal({
+          title: "Erro ao Salvar",
+          text: "Por favor, adicione pelo menos um evento",
+          type: "warning",
+          confirmButtonText: "Ok"
+          //TODO: Mover para a aba correta
+        });
+      } else {
+
+        // $scope.program.starts = $scope.startDate.date();
+        $scope.program.starts = moment($('#startDate-text').val() + " " + $('#startTime-text').val(), "DD/MM/YYYY hh:mm");
+        // $scope.program.ends = $scope.endDate.date();
+        $scope.program.ends = moment($('#endDate-text').val() + " " + $('#endTime-text').val(), "DD/MM/YYYY hh:mm");
+
+        if ($scope.isNew) {
+
+
+            $scope.program.events = $scope.events;
+            $scope.program.observers = $scope.observersSelectionOptions.selectedItems;
+            $scope.program.participants = $scope.participantsSelectionOptions.selectedItems;
+
+            $scope.ProgramREST.add($scope.program).then(
+            function(program) {
+              swal({
+                  title: "Programa Adicionado",
+                  text: "O programa foi adicionado com sucesso",
+                  type: "success"
+                },
+                function() {
+                  window.location.replace("home.html");
+                });
+            }, errorAdding);
+
+          } else {
+              var program = $scope.program;
+                program.observers = $scope.observersSelectionOptions.selectedItems;
+                program.participants = $scope.participantsSelectionOptions.selectedItems;
+                program.events = $scope.events;
+
+                var promises = [];
+                $scope.ProgramREST.save(program).then(
+                      function(results) {
+                        swal({
+                            title: "Programa Modificado",
+                            text: "O programa foi modificado com sucesso",
+                            type: "success"
+                          },
+                          function() {
+                            window.location.replace("listPrograms.html");
+                          });
+                }, errorAdding);
+          }
+      }
+
+    }
+
+    function errorAdding(response) {
+       console.log('Error:', response);
+          swal({
+            title: "Erro ao Salvar",
+            text: "Ocorreu o seguinte erro ao salvar o programa: " + response.status + ' ',
+            type: "error",
+            confirmButtonText: "Ok"
+          });
+
+      return $q.reject(response);
+    }
+
+    // $scope.changeTriggerInterface = function(value){
+    //   if (value == 'manual'){
+    //       $('.checkbox-inline').addClass('disabled hidden');
+    //       $('.checkbox-trigger').prop('disabled', true);
+    //   }else if (value == 'daily') {
+    //       $('.checkbox-inline').addClass('disabled hidden');
+    //       $('.checkbox-trigger').prop('disabled', true);
+    //    } else if (value == 'weekly') {
+    //       $('.checkbox-inline').removeClass('disabled hidden');
+    //       $('.checkbox-trigger').prop('disabled', false);
+    //    }
+    // }
+
+    $scope.$watch('eventForm.triggerType', function(value) {
+      // console.log("TESTE");
+
+       if (value == 'custom') {
+          // $('.alarm-manual').removeClass("hidden");
+
+          $('.alarm-daily').addClass("hidden");
+          $('.alarm-weekly').addClass("hidden");
+          $('.alarm-custom').removeClass("hidden");
+          $('.alarm-custom').find('.checkbox-inline').removeClass('disabled hidden');
+          $('.alarm-custom').find('.checkbox-trigger').prop('disabled', false);
+          $('.weekly-checks').find('.checkbox-inline').addClass('disabled hidden');
+          $('.weekly-checks').find('.checkbox-trigger').prop('disabled', true);
+
+       }else if (value == 'daily' ) {
+
+          $('.alarm-daily').removeClass("hidden");
+          $('.alarm-weekly').addClass("hidden");
+          $('.checkbox-inline').addClass('disabled hidden');
+          $('.checkbox-trigger').prop('disabled', true);
+          $('.alarm-custom').addClass("hidden");
+          $('.alarm-custom').find('.checkbox-inline').addClass('disabled hidden');
+          $('.alarm-custom').find('.checkbox-trigger').prop('disabled', true);
+
+       } else if (value == 'weekly') {
+
+          $('.alarm-weekly').removeClass("hidden");
+          $('.alarm-daily').addClass("hidden");
+          $('.alarm-custom').addClass("hidden");
+          $('.weekly-checks').find('.checkbox-inline').removeClass('disabled hidden');
+          $('.weekly-checks').find('.checkbox-trigger').prop('disabled', false);
+          $('.alarm-custom').find('.checkbox-inline').addClass('disabled hidden');
+          $('.alarm-custom').find('.checkbox-trigger').prop('disabled', true);
+       }
+
+    });
+
+    // $scope.$watch('superType', function(value) {
+
+    //    if (value == 'manual') {
+    //       $('.triggerTimer').addClass('disabled');
+    //      } else if (value == 'weekly') {
+    //       $('.triggerTimer').removeClass('disabled');
+    //    }
+
+    // });
+
+    $scope.getNumber = function(num) {
+        return new Array(num);
+    }
+
+    $scope.addCustomItem = function(customId, posInArr){
+      $scope.customArr[posInArr]++;
+      // $scope.customTriggerTime[posInArr].push("tt"+customId);
+      // console.log(customId);
+      // console.log($scope.customArr);
+    };
+
+    $scope.addTrigger = function(fakeId) {
+
+      if (($scope.eventForm.triggerType == 'daily' || $scope.eventForm.triggerType == 'weekly') && $scope.eventForm.triggerPriority == '') {
+          swal({
+            title: 'Erro ao Adicionar',
+            text: "Por favor selecione o tipo de som.",
+            type: "warning",
+            confirmButtonText: "Ok"
+          });
+
+
+        return;
+
+      }
+
+      if ($scope.eventForm.triggerType == 'weekly' && $scope.eventForm.triggerDays.indexOf(true) < 0) {
+          swal({
+            title: 'Erro ao Adicionar',
+            text: "Por favor selecione pelo menos um dia da semana.",
+            type: "warning",
+            confirmButtonText: "Ok"
+          });
+
+
+        return;
+
+      }
+
+      if (!validateHhMm($("#triggerTimePicker"+fakeId).val()) && $scope.eventForm.triggerType != 'custom') {
+          swal({
+            title: 'Erro ao Adicionar',
+            text: "Por favor selecione um horário válido.",
+            type: "warning",
+            confirmButtonText: "Ok"
+          });
+
+
+        return;
+
+      }
+
+      if ($scope.eventForm.timeOut == ''){
+        $scope.eventForm.timeOut = 1800000;
+      }
+
+      if ($scope.eventForm.triggerType == 'custom'){
+        var arrDays = [false, false, false, false, false, false, false];
+        for (var i = 0; i < 7; i++){
+          // 0
+          arrDays[i] = true;
+          for (var z = 0; z < $scope.customArr[i]; z++){
+            // console.log(i, z);
+            if($("#triggerTimePicker"+fakeId+"-"+i+"-"+z).val() == ''){
+                swal({
+                  title: 'Erro ao Adicionar',
+                  text: "Por favor selecione o horário.",
+                  type: "warning",
+                  confirmButtonText: "Ok"
+                });
+
+              return;
+            }
+            if($("#selectPriority"+fakeId+"-"+i+"-"+z).val() == null){
+                swal({
+                  title: 'Erro ao Adicionar',
+                  text: "Por favor selecione o tipo de som.",
+                  type: "warning",
+                  confirmButtonText: "Ok"
+                });
+
+              return;
+            }
+
+
+              var time = $("#triggerTimePicker"+fakeId+"-"+i+"-"+z).val().split(':')
+              var trigger = new EventTrigger();
+              trigger.triggerType = "weekly";
+              trigger.triggerCondition = genereateCronString(trigger.triggerType, arrDays, time[0], time[1]);
+              trigger.priority = $("#selectPriority"+fakeId+"-"+i+"-"+z).val();
+              trigger.triggerType = "time";
+
+              $scope.eventForm.timeOut = 1800000;
+              $scope.hasTriggerChanged = true;
+              $scope.triggers.push(trigger);
+
+          }
+          arrDays[i] = false;
+        }
+        swal({
+              title: "Disparo Adicionado",
+              text: "O disparo foi adicionado com sucesso",
+              type: "success"
+          }, function(){
+            $('html, body').animate({
+                scrollTop: $('.labels-trigger:last').position().top
+            }, 1000, 'swing');
+          });
+
+      }else{
+
+        $scope.eventForm.triggerTime = $("#triggerTimePicker"+fakeId).val()
+
+        var time = $scope.eventForm.triggerTime.split(':');
+
+        var trigger = new EventTrigger();
+        trigger.triggerType = $scope.eventForm.triggerType;
+
+        if (trigger.triggerType === 'manual'){
+          // nothing to do here.
+        }else{
+          trigger.triggerType = "time";
+        }
+        //      trigger.triggerCondition = "manual";
+        //      trigger.priority = "manual";
+        //      trigger.timeOut = 0;
+        // }else{
+          // console.log($scope.eventForm.triggerDays);
+           trigger.triggerCondition = genereateCronString($scope.eventForm.triggerType, $scope.eventForm.triggerDays, time[0], time[1]);
+           trigger.priority = $scope.eventForm.triggerPriority;
+           trigger.timeOut = $scope.eventForm.timeOut*60*1000;
+        // }
+
+
+        $scope.hasTriggerChanged = true;
+        $scope.triggers.push(trigger);
+
+         swal({
+              title: "Disparo Adicionado",
+              text: "O disparo foi adicionado com sucesso",
+              type: "success"
+          }, function(){
+            $('html, body').animate({
+                scrollTop: $('.labels-trigger:last').position().top
+            }, 1000, 'swing');
+          });
+
+      }
+    }
+
+
+    $scope.deleteTrigger = function(index) {
+      console.log('deleteTrigger', event);
+
+      swal({
+        title: "Removendo Disparo",
+        text: "Deseja remover o disparo '" + $scope.triggers[index].toReadableString() + "'?",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sim",
+        cancelButtonText: "Não",
+        closeOnConfirm: true,
+        closeOnCancel: true
+      }, function(isConfirm) {
+        if (isConfirm) {
+
+          $scope.hasTriggerChanged = true;
+
+          $scope.triggers.splice(index, 1);
+          $scope.$apply();
+        }
+      });
+    }
+
+    $scope.printAll = function() {
+      console.log($scope.startDate.date());
+      console.log($('#startTime-text').val());
+      console.log(moment($('#startDate-text').val() + " " + $('#startTime-text').val(), "DD/MM/YYYY hh:mm").toDate());
+      console.log(moment($('#startDate-text').val() + " " + $('#startTime-text').val(), "DD/MM/YYYY hh:mm"));
+    };
+
+    $scope.createInterventions = function() {
+      var w = window.open("interventionsEditor.html", "interventionsEditorPopup", "width=" + $(window) + ", height=400, scrollbars=yes");
+      var $w = $(w.document.body);
+      if ($scope.interventions.length > 0) {
+        w.parentInterventions = $scope.interventions;
+      }
+    }
+
+    $scope.updateInterventions = function(interventions) {
+        console.log('updateInterventions', interventions);
+
+        $scope.interventions.length = 0;
+        if (interventions) {
+          $scope.interventionsButton = "Editar Intervenções";
+          $scope.interventions.push.apply($scope.interventions, interventions);
+          $scope.hasInterventionsChanged = true;
+        } else {
+          $scope.interventionsButton = "Planejar Intervenções";
+        }
+        $scope.$apply();
+      }
+
+    $scope.cancelEvent = function() {
+      swal({
+        title: "Cancelando Evento",
+        text: "Deseja cancelar o evento?",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sim",
+        cancelButtonText: "Não",
+        closeOnConfirm: true,
+        closeOnCancel: true
+      }, function(isConfirm) {
+        if (isConfirm) {
+          $('#eventsModal').modal('hide');
+        }
+      });
+
+    }
+
+    $scope.loadProgram = function(programId, isNew, isImported) {
+
+      $scope.isNew = isNew;
+
+      $scope.pageTitle = $scope.headerTitle = "Editando Programa";
+
+      var promises = [];
+
+      promises.push($scope.ProgramREST.getById(programId));
+      promises.push($scope.ObserverREST.listAll());
+      promises.push($scope.ObserverREST.getContacts($scope.observer, 0, 100));
+      // promises.push($scope.ParticipantREST.listAll());
+
+      $q.all(promises).then(
+        function(responses) {
+
+          var program = responses[0];
+          var allObservers = responses[1].observers;
+
+          // var allParticipants = responses[2].participants;
+          var allParticipants = responses[2].contacts;
+
+          $scope.program = program
+          $scope.startDate.date(program.starts);
+
+          if (program.starts.format("HH:mm") == "Invalid date"){
+            $scope.startTime = '';
+          }else{
+            $scope.startTime = program.starts.format("HH:mm");
+          }
+
+          if (program.ends.format("HH:mm") == "Invalid date"){
+            $scope.endTime = '';
+          }else{
+            $scope.endTime = program.ends.format("HH:mm");
+          }
+
+          $scope.endDate.date(program.ends);
+
+
+          var programObservers = program.observers;
+          var programParticipants = program.participants;
+          var programEvents = program.events;
+
+          for (var i = 0; i < programEvents.length; i++){
+            $scope.fakeId = $scope.fakeId - 1;
+            programEvents[i]['fakeId'] = $scope.fakeId;
+          }
+
+
+          $scope.fakeIdInitial = $scope.fakeId;
+
+          //console.log(allObservers, allParticipants, programObservers, programParticipants);
+
+          $scope.events.push.apply($scope.events, programEvents);
+          console.log("scope events")
+          console.log($scope.events);
+
+          if (isImported){
+
+            $scope.program.title = "Cópia de " + $scope.program.title;
+
+            var eventsAUX = $scope.events.slice();
+            $scope.events = [];
+            for (var i = 0; i < eventsAUX.length; i++){
+              $scope.fakeId -= 1;
+              var event = eventsAUX[i];
+
+              $scope.EventREST.add(event, true).then(
+                  function(event) {
+
+                    // swal({
+                    //     title: "Evento Adicionado",
+                    //     text: "O evento foi adicionado com sucesso",
+                    //     type: "success"
+                    //   },
+                    //   function() {
+                        event.fakeId = $scope.fakeId;
+                        $scope.events.push(event);
+
+                        $scope.$apply();
+                        $(".collapse0").addClass("in");
+                        $(".collapse2").removeClass("in");
+
+                      // });
+
+                  }, errorAdding);
+
+              }
+              $scope.$apply();
+              $(".collapse0").addClass("in");
+              $(".collapse2").removeClass("in");
+
+          }
+
+          if (isNew == true){
+            $scope.observersSelectionOptions.items = [];
+            $scope.observersSelectionOptions.selectedItems = [];
+            $scope.participantsSelectionOptions.items = [];
+            $scope.participantsSelectionOptions.selectedItems = [];
+          }
+
+          removeElementsFromArrayById(programObservers, allObservers);
+              $scope.observersSelectionOptions.items.push.apply(
+                  $scope.observersSelectionOptions.items,
+                  allObservers);
+
+          $scope.observersSelectionOptions.selectedItems.push.apply(
+                  $scope.observersSelectionOptions.selectedItems,
+                  programObservers);
+
+          removeElementsFromArrayById(programParticipants, allParticipants);
+              $scope.participantsSelectionOptions.items.push.apply(
+                  $scope.participantsSelectionOptions.items,
+                  allParticipants);
+
+          $scope.participantsSelectionOptions.selectedItems.push.apply(
+                  $scope.participantsSelectionOptions.selectedItems,
+                  programParticipants);
+
+        }, errorAdding);
+    }
+
+    // $scope.removeManualTrigger = function(fakeId){
+    //   if (!$("#checkManual"+fakeId).prop("checked")){
+
+    //   }
+
+    // }
+
+    $scope.onSubmitEvent = function(fakeId) {
+      //return;
+      // console.log("aqui estou");
+
+      if ($scope.triggers.length == 0) {
+        // swal({
+        //   title: "Erro ao Salvar",
+        //   text: "Por favor, defina pelo menos um disparo",
+        //   type: "warning",
+        //   confirmButtonText: "Ok"
+        // });
+
+        var trigger = new EventTrigger();
+        trigger.triggerType = "manual"
+        trigger.triggerCondition = "manual";
+        trigger.priority = "manual";
+        trigger.timeOut = 0;
+        $scope.triggers.push(trigger);
+
+
+      } else if ($scope.interventions.length == 0) {
+        swal({
+          title: "Erro ao Salvar",
+          text: "Por favor, defina as intervenções",
+          type: "warning",
+          confirmButtonText: "Ok"
+        });
+
+      } else {
+
+        var promises = [];
+
+        if ($("#checkManual"+fakeId).prop('checked')){
+          var aux = false;
+          for (var i = 0; i < $scope.triggers.length; i++){
+            if ($scope.triggers[i].triggerType == "manual") aux = true;
+          }
+          if (!aux){
+            var trigger = new EventTrigger();
+            trigger.triggerType = "manual"
+            trigger.triggerCondition = "manual";
+            trigger.priority = "manual";
+            trigger.timeOut = 0;
+            $scope.triggers.push(trigger);
+            }
+        }else{
+          var index = -1;
+          for (var i = 0; i < $scope.triggers.length; i++){
+            if ($scope.triggers[i].triggerType == "manual") {
+              index = i;
+              $scope.triggers.splice(i, 1);
+              break;
+            }
+          }
+
+        }
+
+        $scope.event.title = $("#event-title-"+fakeId).val();
+        console.log($(".event-desc-"+fakeId).val());
+        $scope.event.description = $(".event-desc-"+fakeId).val();
+        $scope.event.triggers = $scope.triggers;
+        $scope.event.interventions = $scope.interventions;
+
+        console.log('evento to be salved', $scope.event);
+
+
+        if ($scope.isNewEvent) {
+            console.log("isNewEvent");
+            //$scope.event.triggers = [];
+            //$scope.interventions = [];
+
+            $scope.EventREST.add($scope.event, true).then(
+              function(event) {
+                console.log("afterEvent is add", event);
+
+                swal({
+                    title: "Evento Adicionado",
+                    text: "O evento foi adicionado com sucesso",
+                    type: "success"
+                  },
+                  function() {
+                    event.fakeId = $scope.fakeId;
+                    $scope.events.pop();
+                    $scope.events.push(event);
+
+                    $scope.$apply();
+                   // $("#collapse"+event.fakeId).addClass('in');
+                    // $('#eventsModal').modal('hide');
+                     $(".collapse0").addClass("in");
+                     $(".collapse2").removeClass("in");
+                  });
+
+              }, errorAdding);
+
+          } else {
+              console.log("isEventOld");
+
+
+              //TODO: if there are no changes on interventions or triggers, a save not verbose can be used instead.
+              //if ($scope.hasInterventionsChanged || $scope.hasTriggerChanged == false) {
+                $scope.event.triggers = $scope.triggers;
+                $scope.event.interventions = $scope.interventions;
+
+                $scope.EventREST.save($scope.event, true).then(
+                   function(response) {
+                    swal({
+                        title: "Evento Modificado",
+                        text: "O evento foi modificado com sucesso",
+                        type: "success"
+                      },
+                      function() {
+
+                        var k;
+
+                        for (k = 0; k < $scope.events.length; k++) {
+                            if ($scope.events[k].id == $scope.event.id) {
+                              break;
+                            }
+                        }
+                        $scope.event.fakeId = fakeId;
+                        $scope.events[k] = $scope.event;
+
+                        $scope.$apply();
+                        // console.log($scope.program.events[k].);
+                        //$("#collapse"+$scope.program.events[k].fakeId).toggleClass('in');
+
+                        // $('#eventsModal').modal('hide');
+                      $(".collapse0").addClass("in");
+                      $(".collapse2").removeClass("in");
+                      // console.log(this, fakeId);
+                      });
+                  }, errorAdding);
+        }
+    }
+  }
+
+
+    var programId = getUrlParameter('programId');
+
+    if (programId != null) {
+        $scope.loadProgram(parseInt(programId), false, false);
+    } else {
+        $scope.initProgram()
+    }
+
+
+    $scope.EventREST.getById(11).then(function(response) {
+      console.log('get event 11', response);
+    });
+  });
+
+
+
+  function logout() {
+    caManager.logout();
+  }
+
+
+
+  function interventionsCallBack(interventionsJson) {
+
+     var interventions = []
+
+     for (var i=0; i < interventionsJson.length; i++) {
+        var json = interventionsJson[i];
+        var inter = Intervention.CreateIntervetion(json);
+        interventions.push(inter);
+     }
+
+     var scope = angular.element($("#outer")).scope();
+
+     if (interventions.length > 0) {
+          scope.updateInterventions(interventions);
+      } else {
+          scope.updateInterventions();
+      }
+  }
+
+  </script>
+  <script type="text/javascript" src="js/dualmultiselect_modified.js"></script>
+
+  <script type="text/javascript">
+
+    $(document).ready(function(){
+      percentage = 25;
+
+      // $(".nav-tabs li").click(function(){
+      //   id = parseInt($(this).attr('id').substring(3, 4));
+      //   percentage = id * 25;
+      //   $('.progress-bar').attr('style', "width: " + percentage +"%;")
+
+      //   if (id == 1){
+      //     $(".prev-program").addClass("hidden");
+      //     $(".next-program").removeClass("hidden");
+      //     $(".save-program").addClass("hidden");
+      //   }else if(id == 4){
+      //     $(".next-program").addClass("hidden");
+      //     $(".save-program").removeClass("hidden");
+      //   }else{
+      //     $(".prev-program").removeClass("hidden");
+      //     $(".next-program").removeClass("hidden");
+      //     $(".save-program").addClass("hidden");
+      //   }
+
+      // })
+
+      // $(".next-program").click(function() {
+      //   var currentTab = "";
+      //   var currentLi = "";
+
+      //   $('.tab-content .tab-pane').each(function () {
+      //       if ($(this).hasClass('active')) {
+      //           currentTab = $(this);
+      //       }
+      //   });
+
+      //   $('.nav-tabs li').each(function () {
+      //       if ($(this).hasClass('active')) {
+      //           currentLi = $(this);
+      //       }
+      //   });
+
+      //   if (currentTab.next().length)
+      //   {
+      //     currentTab.removeClass('active');
+      //     currentLi.removeClass('active');
+      //     currentTab.next().addClass('active');
+      //     currentLi.next().addClass('active');
+      //     percentage += 25;
+      //     $('.progress-bar').attr('style', "width: " + percentage +"%;")
+
+      //     if(currentTab.next().attr('id') == "events"){
+      //       $(".next-program").addClass("hidden");
+      //       $(".save-program").removeClass("hidden");
+      //     }else{
+      //       $(".prev-program").removeClass("hidden");
+      //       $(".next-program").removeClass("hidden");
+      //       $(".save-program").addClass("hidden");
+      //     }
+      //   }
+      // });
+
+      // $(".prev-program").click(function() {
+      //   var currentTab = "";
+      //   var currentLi = "";
+
+      //   $('.tab-content .tab-pane').each(function () {
+      //       if ($(this).hasClass('active')) {
+      //           currentTab = $(this);
+      //       }
+      //   });
+
+      //   $('.nav-tabs li').each(function () {
+      //       if ($(this).hasClass('active')) {
+      //           currentLi = $(this);
+      //       }
+      //   });
+
+      //   if (currentTab.prev().length)
+      //   {
+      //     currentTab.removeClass('active');
+      //     currentLi.removeClass('active');
+      //     currentTab.prev().addClass('active');
+      //     currentLi.prev().addClass('active');
+
+      //     percentage -= 25;
+
+      //     $('.progress-bar').attr('style', "width: " + percentage +"%;");
+
+      //     if(currentTab.prev().attr('id') == "info"){
+      //       $(".prev-program").addClass("hidden");
+      //     }else{
+      //       $(".next-program").removeClass("hidden");
+      //       $(".save-program").addClass("hidden");
+      //     }
+      //   }
+      // });
+
+      //Initialize tooltips
+    $('.nav-tabs > li a[title]').tooltip();
+
+    //Wizard
+    $('a[data-toggle="tab"]').on('show.bs.tab', function (e) {
+
+        var $target = $(e.target);
+
+        if ($target.parent().hasClass('disabled')) {
+            return false;
+        }
+    });
+
+    $(".next-step").click(function (e) {
+
+        var $active = $('.wizard .nav-tabs li.active');
+        $active.next().removeClass('disabled');
+        // $active.next().removeClass('done');
+        $active.addClass('done');
+        nextTab($active);
+
+    });
+    $(".prev-step").click(function (e) {
+
+        var $active = $('.wizard .nav-tabs li.active');
+        prevTab($active);
+        // $active.prev().removeClass('done');
+
+
+    });
+
+    $("#programForm").bind("keypress", function (e) {
+        // enter pressing
+        if (e.keyCode == 13) {
+            return false;
+        }
+    });
+    // $("a.triggerCollapse").on("click", function(e){
+    //   console.log("works");
+    //   console.log(e);
+    // });
+
+    });
+
+    function changeTdColorP(x){
+      $(".td-selected-p").removeClass("td-selected-p")
+      $(x).addClass('td-selected-p');
+    }
+
+    function changeTdColorO(x){
+      $(".td-selected-o").removeClass("td-selected-o")
+      $(x).addClass('td-selected-o');
+    }
+
+    function nextTab(elem) {
+        $(elem).next().find('a[data-toggle="tab"]').click();
+    }
+    function prevTab(elem) {
+        $(elem).prev().find('a[data-toggle="tab"]').click();
+    }
+
+    function ActivateDoublePanels(e){
+      // console.log("works");
+      var eventID = $(e).attr("id").substring(14, $(e).attr("id").length);
+
+      $("#collapse"+eventID).toggleClass("in");
+      // $("#collapse"+eventID).toggleClass("in-animate");
+      if ($(".collapse2").hasClass("in") && !$("#collapse2"+eventID).hasClass("in")){
+        $(".collapse0").addClass("in");
+        $("#collapse"+eventID).removeClass("in");
+        $(".collapse2").removeClass("in in-animate");
+        $("#collapse2"+eventID).toggleClass("in in-animate");
+      }else{
+      //   $("#collapse2"+eventID).toggleClass("in in-animate out-animate");
+      // }else{
+        $("#collapse2"+eventID).toggleClass("in in-animate");
+      }
+      // }
+
+
+      // if ($("#collapse2"+eventID).hasClass("in")){
+      //   $($("#collapse2"+eventID).addClass("out-animate"));
+      //   $($("#collapse2"+eventID).removeClass("in-animate"));
+      // }else{
+      //   $($("#collapse2"+eventID).addClass("in-animate"));
+      //   $($("#collapse2"+eventID).removeClass("out-animate"));
+      // }
+
+    }
+
+    function validateHhMm(value) {
+        var isValid = /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(value);
+
+        // if (isValid) {
+        //     inputField.style.backgroundColor = '#bfa';
+        // } else {
+        //     inputField.style.backgroundColor = '#fba';
+        // }
+
+        return isValid;
+    }
+  </script>
+
+</body>
+</html>

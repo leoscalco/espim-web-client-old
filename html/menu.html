@@ -1,0 +1,89 @@
+<div class="row">
+	<div class="col-md-12">
+		<nav class="navbar navbar-inverse container-fluid navbar-fixed-top">
+			<div class="container-fluid">
+				<div class="nav navbar-nav navbar-nav-general">
+					<a href="home.html"><img src="img/logo-espim-web/logo-espim-web.png"
+				     srcset="img/logo-espim-web/logo-espim-web@2x.png 2x,
+				             img/logo-espim-web/logo-espim-web@3x.png 3x"
+				     class="logo_espim_web"></a>
+				</div>
+
+				<div class="navbar-header">
+					<a class="navbar-brand" href="home.html">ESPIM</a>
+				</div>
+
+				<ul class="nav navbar-nav navbar-nav-general">
+					<li ng-class="getMenuClass('participant')">
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#">Participantes
+							<span class="caret"></span>
+						</a>
+						<ul class="dropdown-menu">
+							<li><a href="addParticipant.html">Adicionar</a></li>
+							<li><a href="listParticipants.html?page=0">Listar</a></li>
+						</ul>
+					</li>
+
+					<li ng-class="getMenuClass('program')">
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#">Programas
+							<span class="caret"></span>
+						</a>
+						<ul class="dropdown-menu">
+							<li><a href="addProgram.html">Adicionar</a></li>
+							<li><a href="listPrograms.html?page=0">Listar</a></li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="nav navbar-nav  navbar-right">
+					<!-- <li>
+						<a>Olá, <span id="user-name">{{username}}</span></a>
+					</li> -->
+					<li class="dropdown">
+			          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+			          	<!-- <i class="fa fa-cog" aria-hidden="true"></i> -->
+			          	<img src={{profileImage}} id="profile-image" class="img-circle img-circle2"></img>
+ 						<span class="caret"></span>
+ 					</a>
+			          <ul class="dropdown-menu" role="menu">
+			          	<li>
+			          		<img src={{profileImage}} id="profile-image" class="img-circle img-drop-menu img-responsive center-block"></img>
+			          		<a href="<span id="">
+			          		</span><span id="user-name">
+			          			<b>{{username}}</b>
+				          		<br/>{{email}}
+			          		</span>
+			          		</a>
+			          	</li>
+<!-- 			            <li class="divider"></li>
+			            <li><a href="#">Separated link</a></li>
+			            <li><a href="#">Separated link</a></li> -->
+			            <li class="divider"></li>
+			            <li><a href="#" onclick="logout()">
+			            	<i class="fa fa-sign-out" aria-hidden="true"></i> Sair</a></li>
+			          </ul>
+			        </li>
+
+
+					<!--li ng-if="isSuperUser" ng-class="getMenuClass('program')">
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#">Opções Administrativas
+							<span class="caret"></span>
+						</a>
+						<ul class="dropdown-menu">
+							<li><a href="listAllPrograms.html">Listar Programas</a></li>
+							<li><a href="listAllParticipants.html">Listar Participantes</a></li>
+						</ul>
+					</li-->
+					<!--li ng-class="getMenuClass('event')">
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#">Eventos
+							<span class="caret"></span>
+						</a>
+						<ul class="dropdown-menu">
+							<li><a href="addEvent.html">Adicionar</a></li>
+							<li><a href="listEvents.html">Listar</a></li>
+						</ul>
+					</li-->
+				</ul>
+			</div>
+		</nav>
+	</div>
+</div>

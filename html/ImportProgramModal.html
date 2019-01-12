@@ -1,0 +1,38 @@
+<!-- <div class="row">
+  <div class="col-md-12">
+    <h2>{{pageTitle}}</h2>
+  </div>
+</div>
+ -->
+<!--
+<div class="row">
+    <div class="col-xs-8"> -->
+      <div>
+        <label class="control-label">Filtrar:</label>
+        <div class="form-group has-feedback has-feedback-left">
+            <i class="glyphicon glyphicon-search form-control-feedback"></i>
+            <input ng-model="filterImport" type="text" class="form-control" placeholder="Pesquisar programas" style="max-width: 500px;">
+        </div>
+
+      </div>
+
+<!--     <div class="col-md-2">
+      <div class="form-group form-inline">
+        <label class="control-label"><input type="checkbox" ng-model="onlyActives">Somente ativos</label>
+        </div>
+    </div> -->
+
+
+
+      <h6>Clique em um programa para importá-lo:</h6>
+
+        <ul >
+          <li class="" ng-if="programsToImport.length == 0">Não há programas adicionados ainda.</li>
+          <li class="" ng-repeat="program in programsToImport | filter:filterImport">
+            <a title="Ver resultados" ng-click="importProgram(program)" data-dismiss="modal" aria-label="Close" >{{ program.toString() }}</a>
+   <!--          <div class="pull-right action-buttons">
+              <a title="Ver resultados" ng-href="{{'viewResults.html?programId=' + program.id}}" ><span class="glyphicon glyphicon-calendar"></span></a>
+              <a title="Editar programa" ng-href="{{'addProgram.html?programId=' + program.id}}" ><span class="glyphicon glyphicon-pencil"></span></a>
+              <a title="Excluir programa" href="" ng-click="deleteProgram(program)" class="red"><span class="glyphicon glyphicon-trash"></span></a>
+            </div> -->
+          </li>

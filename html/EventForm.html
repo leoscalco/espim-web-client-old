@@ -1,0 +1,25 @@
+<div class="row">
+  <div class="col-md-6">
+    <div class="form-group">
+      <label for="title">Título*:</label>
+      <input ng-model="event.title" type="text" class="form-control" required autofocus>
+    </div>
+    <div class="form-group" >
+      <label for="description">Descrição:</label>
+      <textarea id="txtDescription" ng-model="event.description" type="text" class="form-control"></textarea>
+    </div>
+    <div class="form-group">
+      <label for="cron">Disparo*:</label>
+      <!--cron-selection ng-model="trigger"></cron-selection-->
+      <cron-gen ng-model="cronExpression" options="cronOptions" ng-disabled="isCronDisabled"></cron-gen>
+    </div>
+    <div class="form-group">
+      <label for="cron">Intervenções*:</label>
+      <button type="button" ng-click="createInterventions()" id="btnPlanInterventions" class="btn btn-primary btn-block">Planejar Intervenções</button>
+      <ul class="list-group">
+        <li class="list-group-item" ng-repeat="intervention in interventions">{{intervention.friendlyOutput()}}</li>
+      </ul>
+    </div>
+    <span>* Campos marcados com <strong>*</strong> são obrigatórios</span>
+  </div>
+</div>

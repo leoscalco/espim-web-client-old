@@ -1,0 +1,83 @@
+<!-- <div class="row">
+  <div class="col-md-12">
+    <h2>{{pageTitle}}</h2>
+  </div>
+</div>
+ -->
+
+<div class="row">
+    <div class="col-xs-8">
+      <div class="  ">
+        <label class="control-label">Filtrar:</label>
+        <div class="form-group has-feedback has-feedback-left">
+            <i class="glyphicon glyphicon-search form-control-feedback"></i>
+            <input ng-model="filterValue" type="text" class="form-control" placeholder="Procurar programas">
+        </div>
+
+      </div>
+    </div>
+
+    <div class="col-xs-2">
+      <div class="form-group">
+        <label class="control-label">Por</label>
+          <select ng-model="filterField" class="form-control">
+              <option value="title">Título</option>
+              <option value="description">Descrição</option>
+          </select>
+        </div>
+    </div>
+
+
+    <div class="col-md-2">
+      <div class="form-group form-inline">
+        <label class="control-label"><input type="checkbox" ng-model="onlyActives">Somente ativos</label>
+        </div>
+    </div>
+</div>
+<p>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+
+      <div class="panel-heading">
+        <span class="glyphicon glyphicon-list"></span>Lista de Programas
+        <p class="pull-right">
+            <span class="label label-info">Total de programas: {{totalElements}} </span></p>
+      </div>
+
+      <div class="panel-body">
+        <ul class="list-group">
+          <li class="list-group-item" ng-if="programs.length == 0">Não há programas adicionados ainda.</li>
+          <li class="list-group-item" ng-repeat="program in programs | programFilter:filterValue:filterField:onlyActives">
+            <a title="Ver resultados" ng-href="{{'addProgram.html?programId=' + program.id}}" >{{ program.toString() }}</a>
+            <div class="pull-right action-buttons">
+              <a title="Ver resultados" ng-href="{{'viewResults.html?programId=' + program.id}}" ><span class="glyphicon glyphicon-calendar"></span></a>
+              <a title="Editar programa" ng-href="{{'addProgram.html?programId=' + program.id}}" ><span class="glyphicon glyphicon-pencil"></span></a>
+              <a title="Excluir programa" href="" ng-click="deleteProgram(program)" class="red"><span class="glyphicon glyphicon-trash"></span></a>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+
+      <div class="panel-footer">
+        <div class="row">
+          <div class="col-md-12">
+            <ul class="pagination pagination-sm pull-right">
+              <li ng-if="firstPage != currentPage" ><a ng-href="{{'listPrograms.html?page=' + (currentPage-1) }}">«</a></li>
+              <li ng-repeat="x in pageRange">
+                <a ng-if=" x == currentPage + 1" class="active" href="javascript:void(0)">
+                {{x}}</a>
+                <a ng-if=" x != currentPage + 1" ng-href="{{'listPrograms.html?page=' + (x-1) }}" >
+                {{x}}</a>
+              </li>
+              <li ng-if="lastPage != currentPage" ><a ng-href="{{'listPrograms.html?page=' + (currentPage+1) }}">»</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
